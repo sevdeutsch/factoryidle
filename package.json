@@ -8,20 +8,27 @@
     "build": "electron-builder"
   },
   "build": {
-    "appId": "your.app.id",
-    "productName": "YourAppName",
+    "appId": "incremental-factory.app.id",
+    "productName": "Incremental Factory 1.0.6",
     "directories": {
       "output": "build"
     },
     "files": [
       "index.html",
       "main.js",
-      "package.json"
+      "package.json",
+      "dist/",
+      "assets/",
+      "icons/",
+      "css/",
+      "js/"
     ],
     "mac": {
-      "category": "public"
-    } ,
+      "icon": "icons/icon.icns",
+      "category": "public.app-category.games"
+    },
     "win": {
+      "icon": "icons/icon.ico",
       "target": [
         "nsis"
       ]
@@ -31,6 +38,7 @@
       "allowToChangeInstallationDirectory": true
     },
     "linux": {
+      "icon": "icons/icon.png",
       "target": [
         "AppImage",
         "deb"
