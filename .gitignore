@@ -3,3 +3,6 @@
 
 #Ignore Other
 Other/
+
+build/*
+node_modules/*
