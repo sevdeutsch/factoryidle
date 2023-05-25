@@ -15,6 +15,8 @@ document.addEventListener("DOMContentLoaded", function () {
   intro.addEventListener("dblclick", hideIntro);
 });
 
+let accessibilityMode = false;
+
 document.addEventListener("DOMContentLoaded", () => {
     const buyParcelButton = document.getElementById("buyParcel");
     const buyParcelDropdown = document.getElementById("buyParcel-dropdown");
@@ -49,13 +51,14 @@ document.addEventListener("DOMContentLoaded", () => {
       const selectedCluster = parseInt(buyParcelDropdown.value.split("-")[1]);
 
       const resourceCounts = {
-        expansionPoints: firstParcelResourceEP + (selectedParcelHasRCF ? selectedParcel.resources.expansionPoints : 0) + buildingManager.getResourcesFromRemoteConstructionFacilities(window.parcels.parcelList, 'expansionPoints'),
-        alienArtefacts: firstParcelResourceAA + (selectedParcelHasRCF ? selectedParcel.resources.alienArtefacts : 0) + buildingManager.getResourcesFromRemoteConstructionFacilities(window.parcels.parcelList, 'alienArtefacts'),
+        expansionPoints: firstParcelResourceEP + ((selectedParcelHasRCF ? selectedParcel.resources.expansionPoints : 0) || 0) + buildingManager.getResourcesFromRemoteConstructionFacilities(window.parcels.parcelList, 'expansionPoints'),
+        alienArtefacts: firstParcelResourceAA + ((selectedParcelHasRCF ? selectedParcel.resources.alienArtefacts : 0) || 0) + buildingManager.getResourcesFromRemoteConstructionFacilities(window.parcels.parcelList, 'alienArtefacts'),
       };
 
+      console.log(selectedParcelHasRCF, selectedParcel.resources.expansionPoints, buildingManager.getResourcesFromRemoteConstructionFacilities(window.parcels.parcelList, 'expansionPoints'))
       console.log("resourceCounts", resourceCounts);
-      console.log("parcels.canBuyParcel(resourceCounts)", parcels.canBuyParcel(resourceCounts));
-      if (parcels.canBuyParcel(resourceCounts)) {
+      console.log("parcels.canBuyParcel(resourceCounts)", parcels.canBuyParcel(resourceCounts, selectedCluster));
+      if (parcels.canBuyParcel(resourceCounts, selectedCluster)) {
         const cost = gameState.clusterBuyParcelCosts[selectedCluster];
 
         for (const [resource, amount] of Object.entries(cost)) {
@@ -71,28 +74,50 @@ document.addEventListener("DOMContentLoaded", () => {
           }
         }
 
-        
         const newParcel = parcels.createNewParcel(selectedCluster);
-        ui.addParcelToUI(newParcel);
-        ui.updateResourceDisplay(newParcel);
 
-        // Select the newly bought parcel
-        const newIndex = parcels.getParcelCount() - 1;
-        ui.selectParcel(newIndex);
+        // Add new parcel to UI, then update cluster parcels
+        ui.addParcelToUI(newParcel, () => {
+          ui.updateResourceDisplay(newParcel);
+          ui.updateBuildingDisplay(newParcel);
 
-        // Increment the costs for the next purchase
-        gameState.clusterBuyParcelCosts[selectedCluster].expansionPoints = parseFloat((parseFloat(cost.expansionPoints) + 1).toFixed(1));
-        gameState.clusterBuyParcelCosts[selectedCluster].alienArtefacts = parseFloat((parseFloat(cost.alienArtefacts) + 0.5).toFixed(1));
+          // Select the newly bought parcel
+          const newIndex = parcels.getParcelCount() - 1;
+          ui.setSelectedParcelIndex(newIndex);
+          ui.selectParcel(newIndex);
+          parcelManipulation.selectParcel(newIndex);
+
+          // Update cluster parcels
+          gameLoop.updateClusterParcels();
+
+          // Increment the costs for the next purchase
+          gameState.clusterBuyParcelCosts[selectedCluster].expansionPoints = parseFloat((parseFloat(gameState.clusterBuyParcelCosts[selectedCluster].expansionPoints) + 1).toFixed(1));
+          gameState.clusterBuyParcelCosts[selectedCluster].alienArtefacts = parseFloat((parseFloat(gameState.clusterBuyParcelCosts[selectedCluster].alienArtefacts) + 0.5).toFixed(1));
+        });
+      } else {
+        const missingResources = [
+          {
+            resourceName: "Expansion Points",
+            amount: gameState.clusterBuyParcelCosts[selectedCluster].expansionPoints - resourceCounts.expansionPoints,
+          },
+          {
+            resourceName: "Alien Artifacts",
+            amount: gameState.clusterBuyParcelCosts[selectedCluster].alienArtefacts - resourceCounts.alienArtefacts,
+          },
+        ];
+
+        const descriptionText = "To buy a parcel, your resources need to be in your first parcel (or a parcel with a Remote Construction Facility).";
+        const timer = 10000; // 10 seconds
+
+        ui.showMissingResourceOverlay(missingResources, event, descriptionText, timer);
       }
-      //else alert("To Buy A New Parcel:\nMake sure Expansion Points and Alien Artefacts are in the furthest left parcel\n(or in an Remote Construction Facility)")
-      else alert(`Missing Resources:\n(${resourceCounts.expansionPoints}/${gameState.buyParcelCost.expansionPoints}) Expansion Points,\n(${resourceCounts.alienArtefacts}/${gameState.buyParcelCost.alienArtefacts}) Alien Artifacts\n\nDid you know: To buy a parcel, you need the relevant resources inside your leftmost parcel or a parcel with a Remote Construction Facility`)
     });
 
     // Add tooltip to Buy Parcel button
     ui.addTooltipToBuyParcelButton(buyParcelButton);
 
     //Start Research button event listener
-    startResearchButton.addEventListener("click", () => {
+    startResearchButton.addEventListener("click", (event) => {
       const selectedResearchId = researchSelect.value;
       const selectedResearch = window.researchManager.getResearch(selectedResearchId);
       const resourceCost = Object.entries(selectedResearch.cost);
@@ -128,7 +153,33 @@ document.addEventListener("DOMContentLoaded", () => {
         // Update the UI as needed
         window.researchManager.populateResearchDropdown();
         ui.updateParcelsSectionVisibility();
+      } else {
+        const missingResources = resourceCost
+          .filter(([resourceName, cost]) => {
+            const totalResource = (selectedParcel.resources[resourceName] || 0) + buildingManager.getResourcesFromRemoteConstructionFacilities(window.parcels.parcelList, resourceName);
+            return totalResource < cost;
+          })
+          .map(([resourceName, cost]) => {
+            const totalResource = (selectedParcel.resources[resourceName] || 0) + buildingManager.getResourcesFromRemoteConstructionFacilities(window.parcels.parcelList, resourceName);
+            return { resourceName, amount: cost - totalResource };
+          });
+
+        ui.showMissingResourceOverlay(missingResources, event);
       }
+    });
+
+    // Add event listeners for the buttons
+    document.getElementById('factoryOff').addEventListener('click', factoryOff);
+    document.getElementById('factoryOn').addEventListener('click', factoryOn);
+
+    // Event listener for Accessibility Mode
+    const accessibilityModeToggle = document.getElementById("accessibility-mode-toggle");
+    accessibilityModeToggle.addEventListener("click", () => {
+      accessibilityMode = !accessibilityMode;
+      accessibilityModeToggle.textContent = `Accessibility Mode: ${accessibilityMode ? "On" : "Off"}`;
+
+      // Update the overlay behavior based on the accessibility mode
+      updateOverlayBehavior();
     });
 
     gameLoop.start();
@@ -208,7 +259,6 @@ function cheat(pin) {
   if (pin === 99) {
     parcels.parcelList[0].resources.alienArtefacts = 5000;
     parcels.parcelList[0].resources.expansionPoints = 5000;
-    parcels.parcelList[0].resources.researchPoints = 5000;
     parcels.parcelList[0].resources.ironPlates = 5000;
     parcels.parcelList[0].resources.bricks = 5000;
     parcels.parcelList[0].resources.steel = 5000;
@@ -216,5 +266,59 @@ function cheat(pin) {
     parcels.parcelList[0].resources.greenChips = 5000;
     parcels.parcelList[0].resources.stone = 5000;
     parcels.parcelList[0].resources.coal = 5000;
+    parcels.parcelList[0].resources.gears = 5000;
+    parcels.parcelList[0].resources.redScience = 5000;
+    parcels.parcelList[0].resources.greenScience = 5000;
+    parcels.parcelList[0].resources.darkScience = 5000;
+    parcels.parcelList[0].resources.blueScience = 5000;
+    parcels.parcelList[0].resources.purpleScience = 5000;
+    parcels.parcelList[0].resources.yellowScience = 5000;
+    parcels.parcelList[0].resources.whiteScience = 5000;
   }
+}
+
+function toggleGameSection(sectionId) {
+  const section = document.getElementById(sectionId);
+
+  if (section.classList.contains("hidden")) {
+    section.classList.remove("hidden");
+  } else {
+    section.classList.add("hidden");
+  }
+}
+
+/* ------------------------------------------------------------------------------------------------------------------------------------------------ */
+/* --------------------------------------------------------------- Keyboard Shortcuts ------------------------------------------------------------- */
+/* ------------------------------------------------------------------------------------------------------------------------------------------------ */
+function addParcelNavigationKeyListener() {
+  window.addEventListener('keydown', (event) => {
+    const selectedParcelTab = document.querySelector(".parcel-tab.selected");
+    if (!selectedParcelTab) return;
+
+    let nextParcelTab;
+    if (event.key === 'ArrowRight') {
+      nextParcelTab = selectedParcelTab.nextElementSibling;
+    } else if (event.key === 'ArrowLeft') {
+      nextParcelTab = selectedParcelTab.previousElementSibling;
+    } else {
+      // If neither left nor right arrow key was pressed, do nothing
+      return;
+    }
+
+    // If there is a next parcel to select
+    if (nextParcelTab) {
+      // Deselect the currently selected parcel
+      selectedParcelTab.classList.remove("selected");
+
+      // Select the next parcel
+      nextParcelTab.classList.add("selected");
+      selectedParcelIndex = parseInt(nextParcelTab.id.split("-")[2]) - 1;
+      ui.setSelectedParcelIndex(selectedParcelIndex);
+
+      // Update the resource and building display
+      const parcel = parcels.getParcel(selectedParcelIndex);
+      ui.updateResourceDisplay(parcel);
+      ui.updateBuildingDisplay(parcel);
+    }
+  });
 }

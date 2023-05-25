@@ -161,7 +161,7 @@ class Parcel {
 
 const parcels = {
     parcelList: [],
-    maxBuildingsPerParcel: 8,
+    maxBuildingsPerParcel: 10,
     upgradeCosts: {
       maxBuildingLimit: [
         {
@@ -169,74 +169,77 @@ const parcels = {
           cost: {
             stone: 50,
           },
-          maxBuildingLimit: 8, // Add the max building limit value for this level
+          maxBuildingLimit: 10, // Add the max building limit value for this level
         },
         {
           level: 2,
           cost: {
             expansionPoints: 1,
           },
-          maxBuildingLimit: 16, // Add the max building limit value for this level
+          maxBuildingLimit: 20, // Add the max building limit value for this level
         },
         {
           level: 3,
           cost: {
             expansionPoints: 2,
           },
-          maxBuildingLimit: 24, // Add the max building limit value for this level
+          maxBuildingLimit: 30, // Add the max building limit value for this level
         },
         {
           level: 4,
           cost: {
+            redScience: 1,
             expansionPoints: 4,
-          },
-          maxBuildingLimit: 32, // Add the max building limit value for this level
-        },
-        {
-          level: 5,
-          cost: {
-            expansionPoints: 6,
           },
           maxBuildingLimit: 40, // Add the max building limit value for this level
         },
         {
+          level: 5,
+          cost: {
+            greenScience: 1,
+            expansionPoints: 6,
+          },
+          maxBuildingLimit: 50, // Add the max building limit value for this level
+        },
+        {
           level: 6,
           cost: {
+            darkScience: 1,
             expansionPoints: 8,
           },
-          maxBuildingLimit: 48, // Add the max building limit value for this level
+          maxBuildingLimit: 60, // Add the max building limit value for this level
         },
         {
           level: 7,
           cost: {
-            steel: 50,
+            blueScience: 1,
             expansionPoints: 16,
           },
-          maxBuildingLimit: 56, // Add the max building limit value for this level
+          maxBuildingLimit: 70, // Add the max building limit value for this level
         },
         {
           level: 8,
           cost: {
-            steel: 100,
+            purpleScience: 1,
             expansionPoints: 32,
           },
-          maxBuildingLimit: 64, // Add the max building limit value for this level
+          maxBuildingLimit: 80, // Add the max building limit value for this level
         },
         {
           level: 9,
           cost: {
-            steel: 400,
+            yellowScience: 1,
             expansionPoints: 64,
           },
-          maxBuildingLimit: 72, // Add the max building limit value for this level
+          maxBuildingLimit: 90, // Add the max building limit value for this level
         },
         {
           level: 10,
           cost: {
-            steel: 1600,
+            whiteScience: 1,
             expansionPoints: 128,
           },
-          maxBuildingLimit: 80, // Add the max building limit value for this level
+          maxBuildingLimit: 100, // Add the max building limit value for this level
         },
         {
           level: 11,
@@ -244,7 +247,7 @@ const parcels = {
             steel: 3200,
             expansionPoints: 256,
           },
-          maxBuildingLimit: 88, // Add the max building limit value for this level
+          maxBuildingLimit: 110, // Add the max building limit value for this level
         },
         {
           level: 12,
@@ -252,7 +255,7 @@ const parcels = {
             steel: 6400,
             expansionPoints: 512,
           },
-          maxBuildingLimit: 96, // Add the max building limit value for this level
+          maxBuildingLimit: 120, // Add the max building limit value for this level
         },
         {
           level: 13,
@@ -260,7 +263,7 @@ const parcels = {
             steel: 12800,
             expansionPoints: 1024,
           },
-          maxBuildingLimit: 104, // Add the max building limit value for this level
+          maxBuildingLimit: 130, // Add the max building limit value for this level
         },
       ],
     },
@@ -288,8 +291,8 @@ const parcels = {
       return parcel;
     },
 
-    canBuyParcel(resources) {
-      return Object.entries(gameState.buyParcelCost).every(([resource, cost]) => {
+    canBuyParcel(resources, selectedCluster) {
+      return Object.entries(gameState.clusterBuyParcelCosts[selectedCluster]).every(([resource, cost]) => {
         return resources[resource] >= cost;
       });
     },
@@ -333,7 +336,7 @@ const parcels = {
 
       if (!upgradeCost) {
         console.log("Max level reached");
-        return;
+        return false;
       }
 
       const canAfford = Object.keys(upgradeCost).every((resource) => {
@@ -343,7 +346,7 @@ const parcels = {
 
       if (!canAfford) {
         console.log("Not enough resources");
-        return;
+        return false;
       }
 
       Object.keys(upgradeCost).forEach((resource) => {
@@ -371,6 +374,21 @@ const parcels = {
 
       parcel.upgrades[upgradeType]++;
       console.log(`Upgraded ${upgradeType} to level ${parcel.upgrades[upgradeType]}`);
+      return true;
+    },
+
+    getMissingUpgradeResources(parcel, upgradeType) {
+      const upgradeCost = this.getUpgradeCost(parcel, upgradeType);
+      const missingResources = [];
+
+      for (const resource in upgradeCost) {
+        const totalResource = (parcel.resources[resource] || 0) + buildingManager.getResourcesFromRemoteConstructionFacilities(window.parcels.parcelList, resource);
+        if (totalResource < upgradeCost[resource]) {
+          missingResources.push({ resourceName: resource, amount: upgradeCost[resource] - totalResource });
+        }
+      }
+
+      return missingResources;
     },
 
     calcParcelMaxResources(maxBuildings) {

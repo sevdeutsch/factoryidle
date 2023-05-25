@@ -23,7 +23,7 @@ document.addEventListener("DOMContentLoaded", () => {
       input.value = "";
       input.focus();
       input.addEventListener("keypress", (event) => {
-        if (event.key === "Enter") 
+        if (event.key === "Enter")
           document.getElementById("renameParcelButton").click();
       });
   });
@@ -499,6 +499,7 @@ return {
     renameParcel,
     resetColor,
     changeParcelColor,
+    selectParcel,
 };
 
 })();

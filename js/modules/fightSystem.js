@@ -91,9 +91,9 @@ class FactoryUnit extends Unit {
 
 // Initialize your factoryUnits and biterUnits here
 const factorUnitCatalogue = [
-  new FactoryUnit("Wall", 120, 0, 0, 0, { ironPlates: 5, bricks: 50 }),
-  new FactoryUnit("Reinforced Wall", 150, 0, 10, 0, { steel: 5, bricks: 50 }),
-  new FactoryUnit("Turret", 100, 30, 5, 1, { ironPlates: 150, gears: 50, copperCables: 50, bricks: 25 }),
+  new FactoryUnit("Wall", 120, 0, 0, 0, { wall: 1 }),
+  new FactoryUnit("Reinforced Wall", 150, 0, 10, 0, { steel: 10, wall: 5 }),
+  new FactoryUnit("Turret", 100, 30, 5, 1, { turret: 1 }),
   // ... additional factory unit types ...
 ];
 

@@ -24,8 +24,8 @@
     </div>
     <div id="container">
       <h1>
-        <span class="title-text">Factory Idle</span>
-        <span class="version-number">v1.0.5.2</span>
+        <span class="title-text">Incremental Factory</span>
+        <span class="version-number">v1.0.6.1</span>
       </h1>
       <button id="darkModeToggle">Toggle Dark Mode</button>
       <button id="feedback-button" onclick="window.open('https://docs.google.com/forms/d/1oq8YquPPuWRE1zaipHxxVlX2mTAbsTNlvpIQefqQE6M', '_blank')">
@@ -59,7 +59,7 @@
       <button id="importButton">Import</button>
       <button id="factoryOn">Factory On</button>
       <button id="factoryOff">Factory Off</button>
-
+      <button id="accessibility-mode-toggle">Accessibility Mode: Off</button>
       <!-- <button id="importLegacyButton">Import (Legacy)</button> -->
 
       <div id="exportContainer" style="display: none;">
@@ -78,8 +78,8 @@
     <div id="tooltip" class="tooltip" style="display: none;"></div>
     <div id="container">
 
-        <h2 id="global-header">Global</h2>
-        <div class="category global">
+        <h2 id="global-header">Global <button class="collapseButton" onclick="toggleGameSection('global-section')">-</button> </h2>
+        <div class="category global" id="global-section">
 
           <div class="subcategory energy" id="energy-section" style="display: none;">
             <h3>Energy</h3>
@@ -136,91 +136,90 @@
             </div>
           </div>
 
-        </div>
 
-
-        <div id="fight-container" style="display: none;">
-          <h2>Military Operations</h2>
-          <button id="start-battle">Start Battle</button>
-          <br></br>
-          <div style="display: flex;">
-            <div>
-            <table id="resource-cost-table">
-              <tr>
-                <th>Resource</th>
-                <th>Cost</th>
-              </tr>
-            </table>
-            </div>
-
-          </div>
-
-
-
-          <div class="tables-container">
-
-            <div>
-              <h3>Factory Units</h3>
-
-              <table id="factory-units-table">
-                <thead>
-                  <tr>
-                    <th>Name</th>
-                    <th>Health</th>
-                    <th>Attack</th>
-                    <th>Armor</th>
-                    <th>Ammo Consumption</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <!-- Factory units will be dynamically added here -->
-                </tbody>
-              </table>
-
-
-            </div>
-            <div>
-              <h3>Biter Units</h3>
-              <table id="biter-units-table">
-                <thead>
-                  <tr>
-                    <th>Name</th>
-                    <th>Health</th>
-                    <th>Attack</th>
-                    <th>Armor</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <!-- Biter units will be dynamically added here -->
-                </tbody>
-              </table>
-
-            </div>
-          </div>
-          <div style="display: flex;">
-            <h3>Ammunition:</h3>
-            <div id="ammunition" style="margin: 1.33em;"></div>
-          </div>
-          <!--
-          <h2>Battle Log</h2>
-          <div class="battle-log" id="battle-log">
-
-          </div>
-          -->
 
         </div>
 
+        <!-- Military -->
+        <h2 id="military-header">Military Operations <button class="collapseButton" onclick="toggleGameSection('fight-container')">-</button> </h2>
+          <div class="game-section" id="fight-container" style="display: none;">
+            <button id="start-battle">Start Battle</button>
+            <div style="display: flex;">
+              <h3>Ammunition:</h3>
+              <div id="ammunition" style="margin: 1.33em;"></div>
+            </div>
+            <div style="display: flex;">
+              <div>
+              <table id="resource-cost-table">
+                <tr>
+                  <th>Resource</th>
+                  <th>Cost</th>
+                </tr>
+              </table>
+              </div>
+
+
+
+            <div class="tables-container">
+
+              <div>
+                <h3>Factory Units</h3>
+
+                <table id="factory-units-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Health</th>
+                      <th>Attack</th>
+                      <th>Armor</th>
+                      <th>Ammo Consumption</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <!-- Factory units will be dynamically added here -->
+                  </tbody>
+                </table>
+
+
+              </div>
+              <div>
+                <h3>Biter Units</h3>
+                <table id="biter-units-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Health</th>
+                      <th>Attack</th>
+                      <th>Armor</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <!-- Biter units will be dynamically added here -->
+                  </tbody>
+                </table>
+
+              </div>
+            </div>
+            <!--
+            <h2>Battle Log</h2>
+            <div class="battle-log" id="battle-log">
+
+            </div>
+            -->
+
+          </div>
+        </div>
+
+        <!-- Train Section -->
+        <h2 id="train-header">Train Management <button class="collapseButton" onclick="toggleGameSection('train-management')">-</button> </h2>
         <div id="train-management" class="train-management" style="display: none;">
           <!-- <div class="game-world" style="display: inline-block; vertical-align: top;">
             <h3>Game World</h3>
             <svg id="game-world-svg" width="800" height="400"></svg>
           </div> -->
-
-
-          <h2>Train Management</h2>
           <div class="train-list" style="display: inline-block; vertical-align: top;">
             <h3>Trains</h3>
-            <table id="train-table">
+            <table class ="train-table-fixed" id="train-table">
               <thead>
                 <tr>
                   <th>Name</th>
@@ -279,13 +278,42 @@
             <button id="add-schedule">Add Schedule</button>
           </div>
 
-          <div id="schedule-overlay" class="schedule-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.8); z-index: 1000;">
+          <div id="schedule-overlay" class="schedule-overlay" style="display: none; position: fixed; overflow: auto; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.8); z-index: 1000;">
             <div class="schedule-overlay-content">
+              <div style="text-align: right;">
+                <button id="delete-schedule" style="margin-right: 10px;">Delete Schedule</button>
+                <button id="close-schedule-overlay">Close</button>
+              </div>
               <h2>Manage Schedule</h2>
               <label for="schedule-name">Schedule Name:</label>
               <input id="schedule-name" type="text" placeholder="Enter schedule name">
+              <button id="save-schedule" style="margin-right: 10px;">Save</button>
+
+              <div id="storage-rules-container">
+                <h3>Storage Rules</h3>
+                <fieldset>
+                  <legend>Reserve Space:</legend>
+                  <div>
+                    <input type="range" id="reserve-space-slider" name="reserveSpace" min="0" max="100">
+                    <label for="reserve-space-slider">Reserve Space (%)</label>
+                    <span id="reserve-space-value"></span>
+                  </div>
+                </fieldset>
+              </div>
+
+
 
               <h3>Stations</h3>
+              <div style="text-align: left; margin-top: 1em;">
+                <label for="stations-dropdown">Station: </label>
+                <select id="stations-dropdown">
+                  <option value="green-chips">Green Chips Parcel - Cluster 3</option>
+                  <option value="iron-patch">Iron Patch Parcel - Cluster 2</option>
+                  <option value="science">Science Parcel - Cluster 2</option>
+                </select>
+                <button id="add-station">Add Station</button>
+              </div>
+
               <table id="stations-table">
                 <thead>
                   <tr>
@@ -328,25 +356,15 @@
                 </tbody>
               </table>
 
-              <div style="text-align: left; margin-top: 1em;">
-                <select id="stations-dropdown">
-                  <option value="green-chips">Green Chips Parcel - Cluster 3</option>
-                  <option value="iron-patch">Iron Patch Parcel - Cluster 2</option>
-                  <option value="science">Science Parcel - Cluster 2</option>
-                </select>
-                <button id="add-station">Add Station</button>
-              </div>
 
-              <div style="text-align: right;">
-                <button id="save-schedule" style="margin-right: 10px;">Save Schedule</button>
-                <button id="delete-schedule" style="margin-right: 10px;">Delete Schedule</button>
-                <button id="close-schedule-overlay">Close</button>
-              </div>
+
+
+
             </div>
           </div>
 
           <!-- Add this inside your HTML body -->
-          <div id="edit-station-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.8); z-index: 1001;">
+          <div id="edit-station-overlay" style="display: none; position: fixed; overflow: auto; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.8); z-index: 1001;">
             <div class="station-overlay-content">
               <h2>Edit Station</h2>
               <div>
@@ -370,9 +388,9 @@
                       <option value="time">Time</option>
                       <option value="inactivity">Inactivity</option>
                     </select>
-                    <input id="condition-amount" type="number" placeholder="Amount" style="margin-left: 8px;" />
+                    <input id="condition-amount" type="number" placeholder="Time in s" style="margin-left: 8px;" />
                   </div>
-                  <p>Note: If you choose "Full" or "Empty", the amount will be the time to leave as a secondary break condition. </p>
+                  <p>Note: You always have to enter a time amount. </p>
                 </div>
                 <div style="display: flex; justify-content: end">
                   <button id="save-edit-station">Save</button>
@@ -385,15 +403,17 @@
 
         </div>
 
+        <!-- Parcels Section -->
+        <h2 id="parcels-header">Parcels <button class="collapseButton" onclick="toggleGameSection('parcels-section')">-</button> </h2>
         <div class="game-section" id="parcels-section">
-          <h2>Parcels</h2>
-          <!-- Buy Parcel -->
-          <button id="buyParcel">Buy New Parcel</button>
 
+          <!-- Buy Parcel -->
           <select id="buyParcel-dropdown" style="display:none;">
             <option value="cluster-0">Cluster 0</option>
             <option value="cluster-1">Cluster 1</option>
           </select>
+
+          <button id="buyParcel">Buy New Parcel</button>
 
           <div id="cluster-tabs">
             <!-- Cluster tabs will be dynamically added here -->
@@ -407,86 +427,99 @@
           <!-- Parcel Manipulation -->
         </div>
 
-        <div class="game-section">
-          <div class="parcel-manipulation">
-            <h2 id="parcelNameDisplay" class="parcel-name">Parcel 1</h2>
-            <button id="parcelManipulationMenuButton" class="menu-button">⚙</button>
-            <div id="parcelManipulationMenu" class="menu hidden">
-              <button id="renameDropdownItem" class="menu-item">Rename</button>
-              <button id="changeColorDropdownItem" class="menu-item">Change Color</button>
-              <button id="moveDropdownItem" class="menu-item">Move</button>
-              <button id="copyDropdownItem" class="menu-item">Copy</button>
-              <button id="pasteDropdownItem" class="menu-item">Paste</button>
-            </div>
-            <!-- Rename Popup -->
-            <div id="renameParcelOverlay" class="parcel-manipulation-overlay" style="display: none;">
+        <!-- Resource Table & Buildings -->
+
+        <div class="main-flexbox">
+          <div>
+          <h2 class="resources-and-buildings-header">Resources <button class="collapseButton" onclick="toggleGameSection('resources-section')">-</button> </h2>
+          <div class="game-section" id="resources-section">
+            <div class="parcel-manipulation">
+              <h3 id="parcelNameDisplay" class="parcel-name">Parcel 1</h3>
+              <button id="parcelManipulationMenuButton" class="menu-button">⚙</button>
+              <div id="parcelManipulationMenu" class="menu hidden">
+                <button id="renameDropdownItem" class="menu-item">Rename</button>
+                <button id="changeColorDropdownItem" class="menu-item">Change Color</button>
+                <button id="moveDropdownItem" class="menu-item">Move</button>
+                <button id="copyDropdownItem" class="menu-item">Copy</button>
+                <button id="pasteDropdownItem" class="menu-item">Paste</button>
+              </div>
+              <!-- Rename Popup -->
+              <div id="renameParcelOverlay" class="parcel-manipulation-overlay" style="display: none;">
+                  <div class="parcel-manipulation-container">
+                      <label for="parcelNameInput">Rename parcel:</label>
+                      <input type="text" id="parcelNameInput" placeholder="New parcel name">
+                      <button id="renameParcelButton">Rename</button>
+                      <button id="closeRenameParcelOverlay">Cancel</button>
+                  </div>
+              </div>
+              <!-- Color Picker Popup -->
+              <div id="colorPickerOverlay" class="parcel-manipulation-overlay" style="display: none;">
+                  <div class="parcel-manipulation-container">
+                      <label for="colorPickerInput">Change parcel color:</label>
+                      <input type="color" id="colorPickerInput">
+                      <button id="applyColorButton">Change</button>
+                      <button id="reset-color-btn">Reset Color</button>
+                      <button id="closeColorPickerOverlay">Cancel</button>
+                  </div>
+              </div>
+              <!-- Move Popup -->
+              <div id="moveParcelOverlay" class="parcel-manipulation-overlay" style="display: none;">
+                  <div class="parcel-manipulation-container">
+                      <label for="parcelMoveInput">Move parcel:</label>
+                      <div class="input-controller">
+                          <div class="input-btn" id="decreaseMoveAmount">-</div>
+                          <input type="number" id="parcelMoveInput" class="input-display" value="1" min="1" placeholder="Enter move amount">
+                          <div class="input-btn" id="increaseMoveAmount">+</div>
+                      </div>
+                      <button id="moveParcelButton">Move</button>
+                      <button id="closeMoveParcelOverlay">Cancel</button>
+                  </div>
+              </div>
+              <!-- Paste Summary Popup -->
+              <div id="pasteSummaryOverlay" class="parcel-manipulation-overlay" style="display: none;">
                 <div class="parcel-manipulation-container">
-                    <label for="parcelNameInput">Rename parcel:</label>
-                    <input type="text" id="parcelNameInput" placeholder="New parcel name">
-                    <button id="renameParcelButton">Rename</button>
-                    <button id="closeRenameParcelOverlay">Cancel</button>
+                  <div id="pasteSummaryContent"></div>
+                  <button id="confirmPasteButton">Confirm</button>
+                  <button id="cancelPasteButton">Cancel</button>
                 </div>
-            </div>
-            <!-- Color Picker Popup -->
-            <div id="colorPickerOverlay" class="parcel-manipulation-overlay" style="display: none;">
-                <div class="parcel-manipulation-container">
-                    <label for="colorPickerInput">Change parcel color:</label>
-                    <input type="color" id="colorPickerInput">
-                    <button id="applyColorButton">Change</button>
-                    <button id="reset-color-btn">Reset Color</button>
-                    <button id="closeColorPickerOverlay">Cancel</button>
-                </div>
-            </div>
-            <!-- Move Popup -->
-            <div id="moveParcelOverlay" class="parcel-manipulation-overlay" style="display: none;">
-                <div class="parcel-manipulation-container">
-                    <label for="parcelMoveInput">Move parcel:</label>
-                    <div class="input-controller">
-                        <div class="input-btn" id="decreaseMoveAmount">-</div>
-                        <input type="number" id="parcelMoveInput" class="input-display" value="1" min="1" placeholder="Enter move amount">
-                        <div class="input-btn" id="increaseMoveAmount">+</div>
-                    </div>
-                    <button id="moveParcelButton">Move</button>
-                    <button id="closeMoveParcelOverlay">Cancel</button>
-                </div>
-            </div>
-            <!-- Paste Summary Popup -->
-            <div id="pasteSummaryOverlay" class="parcel-manipulation-overlay" style="display: none;">
-              <div class="parcel-manipulation-container">
-                <div id="pasteSummaryContent"></div>
-                <button id="confirmPasteButton">Confirm</button>
-                <button id="cancelPasteButton">Cancel</button>
               </div>
             </div>
+              <table class="table" id="resourceTable"></table>
           </div>
-            <table class="table" id="resourceTable"></table>
-        </div>
+          </div>
 
-        <div class="game-section">
-          <h3 id="buildingHeader">Buildings</h3>
           <div>
-            <input id="only-built" type="checkbox">
-            <label for="only-built">Show only built Buildings</label>
-          </div>
-          <div id="building-tabs">
+          <h2 class="resources-and-buildings-header">Buildings <button class="collapseButton" onclick="toggleGameSection('building-section')">-</button> </h2>
+          <div class="game-section" id="building-section">
+            <h3 id="buildingHeader">Buildings</h3>
+            <div>
+              <input id="only-built" type="checkbox">
+              <label for="only-built">Show only built Buildings</label>
+            </div>
+            <div id="building-tabs">
+
+            </div>
+
+
+            <table class="table" id="buildings">
+              <thead>
+                <tr>
+                  <th>Building</th>
+                  <th>Count</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- Buildings will be dynamically added here -->
+              </tbody>
+            </table>
 
           </div>
-
-
-          <table class="table" id="buildings">
-            <thead>
-              <tr>
-                <th>Building</th>
-                <th>Count</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              <!-- Buildings will be dynamically added here -->
-            </tbody>
-          </table>
-
+          </div>
         </div>
+
+
+
     </div>
 
     <footer style="text-align: right; padding: 20px; font-size: 10px;">

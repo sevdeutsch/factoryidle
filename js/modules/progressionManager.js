@@ -36,21 +36,22 @@ class ProgressionManager {
     const parcels = window.gameState.parcels;
 
     const trainUpgrades = [
-      { researchKey: 'trainsMax1', maxTrains: 2, research: { researchPoints: 60 } },
-      { researchKey: 'trainsMax2', maxTrains: 4, research: { researchPoints: 60 } },
-      { researchKey: 'trainsMax3', maxTrains: 8, research: { researchPoints: 60 } },
-      { researchKey: 'trainsMax4', maxTrains: 16, research: { researchPoints: 60 } }
+      { researchKey: 'trainsMax1', maxTrains: 2, research: { redScience: 60, greenScience: 60, darkScience: 60, blueScience: 60} },
+      { researchKey: 'trainsMax2', maxTrains: 4, research: { redScience: 60, greenScience: 60, darkScience: 60, blueScience: 60, purpleScience: 60} },
+      { researchKey: 'trainsMax3', maxTrains: 8, research: { redScience: 60, greenScience: 60, darkScience: 60, blueScience: 60, purpleScience: 60, yellowScience: 60} },
+      { researchKey: 'trainsMax4', maxTrains: 16, research: { redScience: 600, greenScience: 600, darkScience: 600, blueScience: 600, purpleScience: 600, yellowScience: 600, whiteScience: 60} },
+      { researchKey: 'trainsMax5', maxTrains: 32, research: { redScience: 6000, greenScience: 6000, darkScience: 6000, blueScience: 6000, purpleScience: 6000, yellowScience: 6000, whiteScience: 600} }
     ];
-    
+
     trainUpgrades.forEach((upgrade, index) => {
       if (window.gameState.research[upgrade.researchKey]) {
         gameState.maxTrains = upgrade.maxTrains;
-    
+
         // Add the next research option if it exists in the array and it's not already added
         const nextUpgrade = trainUpgrades[index + 1];
         if (nextUpgrade && !window.researchManager.researchExists(nextUpgrade.researchKey)) {
           window.researchManager.addResearch(
-            new Research(nextUpgrade.researchKey, `Upgrade Train Limit ${nextUpgrade.maxTrains}`, nextUpgrade.research)
+            new Research(nextUpgrade.researchKey, `Upgrade Train Limit to ${nextUpgrade.maxTrains}`, nextUpgrade.research)
           );
           window.researchManager.populateResearchDropdown();
         }
@@ -58,22 +59,23 @@ class ProgressionManager {
     });
 
     const clusterUpgrades = [
-      { researchKey: 'clustersMax1', maxClusters: 3, research: { researchPoints: 60 } },
-      { researchKey: 'clustersMax2', maxClusters: 4, research: { researchPoints: 60 } },
-      { researchKey: 'clustersMax3', maxClusters: 5, research: { researchPoints: 60 } },
-      { researchKey: 'clustersMax4', maxClusters: 6, research: { researchPoints: 60 } }
+      { researchKey: 'clustersMax1', maxClusters: 3, research: { redScience: 60, greenScience: 60, darkScience: 60, blueScience: 60} },
+      { researchKey: 'clustersMax2', maxClusters: 4, research: { redScience: 60, greenScience: 60, darkScience: 60, blueScience: 60, purpleScience: 60} },
+      { researchKey: 'clustersMax3', maxClusters: 5, research: { redScience: 60, greenScience: 60, darkScience: 60, blueScience: 60, purpleScience: 60, yellowScience: 60} },
+      { researchKey: 'clustersMax4', maxClusters: 6, research: { redScience: 600, greenScience: 600, darkScience: 600, blueScience: 600, purpleScience: 600, yellowScience: 600, whiteScience: 60} },
+      { researchKey: 'clustersMax5', maxClusters: 7, research: { redScience: 6000, greenScience: 6000, darkScience: 6000, blueScience: 6000, purpleScience: 6000, yellowScience: 6000, whiteScience: 600} }
     ];
-    
+
     clusterUpgrades.forEach((upgrade, index) => {
       if (window.gameState.research[upgrade.researchKey]) {
         gameState.maxClusters = upgrade.maxClusters;
-    
+
         // Add the next research option if it exists in the array and it's not already added
         const nextUpgrade = clusterUpgrades[index + 1];
         const thisUpgrade = clusterUpgrades[index];
         if (nextUpgrade && !window.researchManager.researchExists(nextUpgrade.researchKey)) {
           window.researchManager.addResearch(
-            new Research(nextUpgrade.researchKey, `Upgrade Cluster Limit ${nextUpgrade.maxClusters}`, nextUpgrade.research)
+            new Research(nextUpgrade.researchKey, `Upgrade Cluster Limit to ${nextUpgrade.maxClusters}`, nextUpgrade.research)
           );
           window.researchManager.populateResearchDropdown();
           ui.updateBuyParcelDropdown();
@@ -93,7 +95,7 @@ class ProgressionManager {
 
     // Check for GameWin
     if (window.gameState.research.gameWon) {
-      alert("Congrats. You won the Demo. Feedback highly appreciated. Also, take a screenshot of your factory and share it, that would be even more appreciated :)");
+      alert("Congrats! You won the Demo! There is a feedback button top left, sharing your perspective highly appreciated :)");
       window.gameState.research.gameWon = false;
     }
 

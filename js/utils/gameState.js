@@ -15,7 +15,7 @@ const gameState = {
     { expansionPoints: 2, alienArtefacts: 1 },
     { expansionPoints: 2, alienArtefacts: 1 },
     { expansionPoints: 2, alienArtefacts: 1 },
-    { expansionPoints: 2, alienArtefacts: 1 },                        
+    { expansionPoints: 2, alienArtefacts: 1 },
   ],
   research: {}, // Fill with your research data
   progression: {
@@ -43,6 +43,7 @@ const gameState = {
   trainList: [],
   maxTrains: 1,
   maxClusters: 2,
+  autoSave: true,
   // Add other relevant game state data as needed
 };
 
@@ -222,8 +223,18 @@ window.loadGame = function() {
   }
 };
 
-// Save the game state every minute
-  setInterval(window.saveGame, 60 * 1000);
+  // Autosave
+  function saveGame() {
+    if (gameState.autoSave) {
+      window.saveGame;
+    }
+  }
+
+  setInterval(saveGame, 120 * 1000);
+
+  function toggleAutoSave() {
+    gameState.autoSave = !gameState.autoSave;
+  }
 
 function getSaveStateString() {
   const saveData = {

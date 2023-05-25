@@ -88,7 +88,7 @@ const ui = (() => {
         // Create a new event listener
         const newListener = (event) => {
           const buildingId = event.target.dataset.buildingId;
-          actionFunction(this.parcel, buildingId);
+          actionFunction(this.parcel, buildingId, event);
         };
 
         // Add the new event listener and store it in the WeakMap
@@ -142,6 +142,9 @@ const ui = (() => {
       resourceNames.forEach((resourceName) => {
         if (resourceName.dataset.tooltipListenerAttached !== 'true') {
           resourceName.addEventListener("mouseover", (event) => {
+            if (event.target.classList.contains('exclude')) {
+                return;
+            }
             const name = resourceName.parentNode.id.split('-')[1];
             const resource = buildingManager.getBuildingByResourceName(name);
             if (resource) {
@@ -491,6 +494,8 @@ const ui = (() => {
       */
     }
 
+
+
     createResourceName(resource, cell) {
       cell.classList.add("resource-name");
       cell.style.whiteSpace = "nowrap";
@@ -502,12 +507,17 @@ const ui = (() => {
       icon.style.height = "24px"; // Adjust the size as needed
       icon.style.verticalAlign = "middle";
       icon.style.marginRight = "5px"; // Add some margin between the icon and the text
+      icon.classList.add("resource-icon")
       textWrapper.appendChild(icon);
 
       textWrapper.insertAdjacentText('beforeend', resource.name);
-      textWrapper.style.display = "inline-block";
+      textWrapper.style.display = "contents";
       textWrapper.style.verticalAlign = "-webkit-baseline-middle";
+
       cell.appendChild(textWrapper);
+
+
+
       return cell;
     }
 
@@ -567,6 +577,9 @@ const ui = (() => {
               //init
               cell = this.createResourceName(resource, cell)
 
+
+
+
               if (building && building.minable) {
                 const mineButton = this.createMineButton(resourceName);
                 cell.appendChild(mineButton);
@@ -615,8 +628,21 @@ const ui = (() => {
             const maxResourceValue = this.parcel.maxResources * (1 / getResourceDensity(resourceName));
             const progressPercentage = Math.min(currentAmount / maxResourceValue, 1) * 100;
 
+            // Get the color from getResourceRateColor and apply it to the resource amount cell
+            const rateColor = getResourceRateColor(this.parcel, resourceName);
+
+            // Get the color from getColorFromPercentage
             let colorPercent = this.getColorFromPercentage(progressPercentage / 100);
-            cell.style.background = `linear-gradient(90deg, ${colorPercent} ${progressPercentage}%, transparent ${progressPercentage}%)`;
+
+            // Blend the rateColor with the colorPercent, preserving the transparency in the progress bar
+            cell.style.background = `
+              linear-gradient(90deg,
+                ${colorPercent} ${progressPercentage}%,
+                ${rateColor} ${progressPercentage}%,
+                ${rateColor} 100%)`;
+
+            //console.log(rateColor);
+
           } else if (column.id === 'productionRate') {
             //update
             let targetInterval = 7;
@@ -626,7 +652,7 @@ const ui = (() => {
             let amount = 0;
 
             if (building) {
-              if (building.id === "expansionCenter" || building.id === "researchCenter") {
+              if (building.id.includes("lab") || building.id === "rocketPartAssembly" || building.id === "sateliteAssembly" || building.id === "expansionCenter" || building.id === "researchCenter") {
                 targetInterval = 300;
               }
 
@@ -793,8 +819,15 @@ const ui = (() => {
       };
 
       // Attach event listeners
-      minusBtn.addEventListener("click", () => handleButtonClick(-1));
-      plusBtn.addEventListener("click", () => handleButtonClick(1));
+      minusBtn.addEventListener("click", (event) => {
+        const amount = event.shiftKey ? -5 : -1;
+        handleButtonClick(amount);
+      });
+
+      plusBtn.addEventListener("click", (event) => {
+        const amount = event.shiftKey ? 5 : 1;
+        handleButtonClick(amount);
+      });
 
       directionInput.addEventListener("input", (event) => {
         const inputVal = parseInt(event.target.value, 10) || 0;
@@ -814,6 +847,12 @@ const ui = (() => {
           event.target.value = 0;
         }
 
+        if (inputVal <= 0 || isNaN(inputVal) || inputVal === null || inputVal === "") {
+          event.target.classList.add('zero-value');
+        } else {
+          event.target.classList.remove('zero-value');
+        }
+
         event.target.dataset.currentval = event.target.value;
 
         // Save the input field value for the parcel, resource, and beltId
@@ -822,6 +861,11 @@ const ui = (() => {
         this.update();
       });
 
+      // Check initial input value and add 'zero-value' class if necessary
+      if (inputValue === 0) {
+        directionInput.classList.add('zero-value');
+      }
+
       return beltController;
     }
 
@@ -829,11 +873,12 @@ const ui = (() => {
       const mineButton = document.createElement("button");
       mineButton.textContent = "Mine";
       mineButton.style.display = "inline-block";
+      mineButton.classList.add("exclude");
       mineButton.style.verticalAlign = "-webkit-baseline-middle";
       mineButton.style.float = "right";
       mineButton.style.marginLeft = "1em"
       mineButton.addEventListener("click", () => {
-        this.parcel.resources[resourceName]++;
+        this.parcel.resources[resourceName] += 1;
         this.update();
       });
 
@@ -902,7 +947,15 @@ const ui = (() => {
 
   }
 
-  function addParcelToUI(parcel) {
+  function updateClusterHeadersVisibility() {
+    const showClusterHeader = window.gameState.research.clusterTech;
+    const clusterHeaders = document.getElementsByClassName("cluster-header");
+    for (const clusterHeader of clusterHeaders) {
+      clusterHeader.style.display = showClusterHeader ? "block" : "none";
+    }
+  }
+
+  function addParcelToUI(parcel, callback) {
     const clusterId = parcel.cluster || 0;
     const clusterContainerId = `cluster-${clusterId}`;
 
@@ -910,7 +963,7 @@ const ui = (() => {
 
     // Create a new cluster container if it doesn't exist
     if (!clusterContainer) {
-      const showClusterHeader = window.gameState.research.clusterTech;      
+      const showClusterHeader = window.gameState.research.clusterTech;
       clusterContainer = document.createElement("div");
       clusterContainer.className = "cluster-container";
       clusterContainer.id = clusterContainerId;
@@ -919,6 +972,7 @@ const ui = (() => {
       const clusterHeader = document.createElement("button");
       clusterHeader.className = "cluster-header";
       clusterHeader.textContent = `Cluster ${clusterId}`;
+      clusterHeader.style.display = showClusterHeader ? "block" : "none"; // control visibility here
       clusterHeader.addEventListener("click", () => {
         clusterContent.classList.toggle("active");
         clusterContent.style.display = clusterContent.style.display === "none" ? "block" : "none";
@@ -929,10 +983,10 @@ const ui = (() => {
       clusterContent.className = "cluster-content";
       clusterContent.id = `cluster-content-${clusterId}`;
       clusterContent.style.display = "block";
-      if (showClusterHeader) {
-        clusterContainer.appendChild(clusterHeader);
-      }
-  
+
+      // Always append the clusterHeader but control its visibility
+      clusterContainer.appendChild(clusterHeader);
+
       clusterContainer.appendChild(clusterContent);
 
       // Find the correct position for the new cluster container
@@ -974,6 +1028,15 @@ const ui = (() => {
     // Update the parcel tab with color and name if available
     const parcelIndex = window.parcels.parcelList.findIndex((p) => p.id === parcel.id);
     parcelManipulation.updateParcelTab(parcelIndex);
+
+    updateClusterHeadersVisibility();
+
+    // Simulate async operation with setTimeout
+    setTimeout(() => {
+      if (callback) {
+        callback();
+      }
+    }, 0);
   }
 
   function addParcelClickListener(parcelTab) {
@@ -1129,7 +1192,7 @@ const ui = (() => {
 
     const totalBuildings = Object.values(parcel.buildings).reduce((a, b) => a + b, 0);
     const buildingHeader = document.getElementById("buildingHeader");
-    buildingHeader.textContent = `Buildings (${totalBuildings} / ${parcel.maxBuildings})`;
+    buildingHeader.textContent = `Buildings (${totalBuildings} / ${parcel.maxBuildings}) `;
 
     // Add Upgrade button
     const upgradeButton = document.createElement("button");
@@ -1170,8 +1233,12 @@ const ui = (() => {
     });
 
     // Add event listener for Upgrade button
-    upgradeButton.addEventListener("click", () => {
-      parcels.upgradeParcel(parcel, "maxBuildingLimit");
+    upgradeButton.addEventListener("click", (event) => {
+      const upgradeSuccess = parcels.upgradeParcel(parcel, "maxBuildingLimit");
+      if (!upgradeSuccess) {
+        const missingResources = parcels.getMissingUpgradeResources(parcel, "maxBuildingLimit");
+        showMissingResourceOverlay(missingResources, event);
+      }
       updateBuildingDisplay(parcel);
     });
 
@@ -1197,8 +1264,30 @@ const ui = (() => {
         const outputText = Object.entries(building.outputs || {})
           .map(([outputResource, amount]) => `${amount} ${outputResource}`)
           .join("<br>");
+        const energyInputText = building.energyInput ? `Energy Consumption: ${building.energyInput}` : "";
+        const energyOutputText = building.energyOutput ? `Energy Production: ${building.energyOutput}` : "";
+        const descriptionText = building.description ? `Description:<br>${building.description}` : "";
 
-        const tooltipText = `Input:<br>${inputText || "None"}<br>Output:<br>${outputText || "None"}`;
+        const ariaLabelElements = [
+          inputText ? `Input: ${inputText}` : "",
+          outputText ? `Output: ${outputText}` : "",
+          energyInputText,
+          energyOutputText,
+          descriptionText
+        ];
+
+        const ariaLabelText = ariaLabelElements.filter(el => el !== "").join(". ");
+
+        const tooltipElements = [
+          inputText ? `Input:<br>${inputText}` : "",
+          outputText ? `Output:<br>${outputText}` : "",
+          energyInputText,
+          energyOutputText,
+          descriptionText
+        ];
+
+        const tooltipText = tooltipElements.filter(el => el !== "").join("<br><br>");
+        tooltip.setAttribute("aria-live", ariaLabelText);
 
         tooltip.innerHTML = tooltipText;
         tooltip.style.display = "block";
@@ -1222,7 +1311,7 @@ const ui = (() => {
     buttons.forEach((button) => {
       button.addEventListener("click", (event) => {
         const buildingId = event.target.dataset.buildingId;
-        actionFunction(parcel, buildingId);
+        actionFunction(parcel, buildingId, event);
         updateBuildingDisplay(parcel);
       });
 
@@ -1283,7 +1372,7 @@ const ui = (() => {
       }
     }
   }
-  function buyBuilding(parcel, buildingId) {
+  function buyBuilding(parcel, buildingId, event) {
     const totalBuildings = Object.values(parcel.buildings).reduce((a, b) => a + b, 0);
     if (totalBuildings < parcel.maxBuildings) {
       const building = buildingManager.getBuilding(buildingId);
@@ -1342,37 +1431,123 @@ const ui = (() => {
             return { resourceName, amount: cost - totalResource };
           });
 
-        showMissingResourceOverlay(missingResources);
+        showMissingResourceOverlay(missingResources, event);
       }
     }
   }
 
-  function showMissingResourceOverlay(missingResources) {
-    const overlay = document.createElement("div");
-    const darkMode = localStorage.getItem('darkMode');
+  function showMissingResourceOverlay(missingResources, event, descriptionText = "", timer = 5000) {
+    // Remove any existing popup
+    const existingPopup = document.querySelector("#missing-resource-overlay");
+    if (existingPopup) {
+      document.body.removeChild(existingPopup);
+    }
 
+    if (accessibilityMode) {
+      timer = 120000
+    }
+
+    const overlay = document.createElement("div");
     overlay.id = "missing-resource-overlay";
+    overlay.classList.add("notification-popup");
+
+    // Create the live region container
+    const liveRegion = document.createElement("div");
+    liveRegion.setAttribute("aria-live", "assertive");
+    overlay.appendChild(liveRegion);
 
     const title = document.createElement("h3");
     title.textContent = "Missing Resources";
+    title.classList.add("notification-popup-content");
+    liveRegion.appendChild(title);
     overlay.appendChild(title);
 
-    const resourceList = document.createElement("ul");
+    const resourceTable = document.createElement("table");
+    const tableHeader = document.createElement("thead");
+    const headerRow = document.createElement("tr");
+    const resourceHeader = document.createElement("th");
+    resourceHeader.textContent = "Resource";
+    headerRow.appendChild(resourceHeader);
+    const amountHeader = document.createElement("th");
+    amountHeader.textContent = "Amount";
+    headerRow.appendChild(amountHeader);
+    tableHeader.appendChild(headerRow);
+    resourceTable.appendChild(tableHeader);
+    const tableBody = document.createElement("tbody");
+    resourceTable.classList.add("notification-popup-content");
     missingResources.forEach((resource) => {
-      const listItem = document.createElement("li");
-      listItem.textContent = `${resource.resourceName}: ${resource.amount}`;
-      resourceList.appendChild(listItem);
-    });
-    overlay.appendChild(resourceList);
+      const tableRow = document.createElement("tr");
 
-    const closeButton = document.createElement("button");
-    closeButton.textContent = "Close";
-    closeButton.addEventListener("click", () => {
-      document.body.removeChild(overlay);
+      const resourceNameCell = document.createElement("td");
+      resourceNameCell.textContent = resource.resourceName;
+      tableRow.appendChild(resourceNameCell);
+
+      const amountCell = document.createElement("td");
+      amountCell.textContent = resource.amount;
+      tableRow.appendChild(amountCell);
+
+      tableBody.appendChild(tableRow);
     });
-    overlay.appendChild(closeButton);
+    resourceTable.appendChild(tableBody);
+    overlay.appendChild(resourceTable);
+
+    if (descriptionText) {
+      const description = document.createElement("p");
+      description.textContent = descriptionText;
+      description.classList.add("notification-popup-content");
+      description.style.maxWidth = "15em";
+      overlay.appendChild(description);
+    }
 
     document.body.appendChild(overlay);
+
+    // Position the overlay next to the mouse pointer
+    overlay.style.left = event.pageX + 10 + "px";
+    overlay.style.top = event.pageY + 10 + "px";
+
+    // Stop event propagation to prevent triggering the document click event listener
+    event.stopPropagation();
+
+    // Automatically close the overlay after 2 seconds
+    const closeOverlay = () => {
+      // Check if the overlay is defined and in the document body
+      if (document.body.contains(overlay)) {
+        document.body.removeChild(overlay);
+      }
+    };
+    setTimeout(closeOverlay, timer);
+
+    // Add an event listener to close the overlay when clicking anywhere on the page
+    document.addEventListener("click", closeOverlay, { once: true });
+  }
+
+  function createResourceTable(missingResources) {
+    const table = document.createElement("table");
+    const tableHeader = document.createElement("thead");
+    const headerRow = document.createElement("tr");
+    const resourceHeader = document.createElement("th");
+    resourceHeader.textContent = "Resource";
+    const amountHeader = document.createElement("th");
+    amountHeader.textContent = "Amount";
+    headerRow.appendChild(resourceHeader);
+    headerRow.appendChild(amountHeader);
+    tableHeader.appendChild(headerRow);
+    table.appendChild(tableHeader);
+
+    const tableBody = document.createElement("tbody");
+    missingResources.forEach((resource) => {
+      const row = document.createElement("tr");
+      const resourceNameCell = document.createElement("td");
+      resourceNameCell.textContent = resource.resourceName;
+      const amountCell = document.createElement("td");
+      amountCell.textContent = resource.amount;
+      row.appendChild(resourceNameCell);
+      row.appendChild(amountCell);
+      tableBody.appendChild(row);
+    });
+    table.appendChild(tableBody);
+
+    return table;
   }
 
   function sellBuilding(parcel, buildingId) {
@@ -1406,11 +1581,15 @@ const ui = (() => {
   function updateParcelBuildingCount(parcelIndex, buildingCount) {
     const selectedParcel = document.getElementById(`parcel-${parcelIndex + 1}`);
     const buildingHeader = document.getElementById("buildingHeader");
-    buildingHeader.textContent = `Buildings (${buildingCount} / ${parcels.maxBuildingsPerParcel})`;
+    buildingHeader.textContent = `Buildings (${buildingCount} / ${parcels.maxBuildingsPerParcel}) `;
   }
 
   function getSelectedParcelIndex() {
     return selectedParcelIndex;
+  }
+
+  function setSelectedParcelIndex(newSelectedParcelIndex) {
+    selectedParcelIndex = newSelectedParcelIndex;
   }
 
   function selectParcel(parcelIndex) {
@@ -1453,15 +1632,19 @@ const ui = (() => {
     const expansionTech = window.gameState.research.expansionTech;
 
     updateSectionVisibility("parcels-section", expansionTech);
+    updateSectionVisibility("parcels-header", expansionTech);
+    updateSectionVisibility("parcelManipulationMenuButton", expansionTech);
     updateSectionVisibility("global-header", expansionTech);
     updateSectionVisibility("energy-section", gameState.sectionVisibility.energySection);
     updateSectionVisibility("pollution-section", gameState.sectionVisibility.pollutionSection);
     updateSectionVisibility("fight-container", gameState.sectionVisibility.fightSection);
+    updateSectionVisibility("military-header", gameState.sectionVisibility.fightSection);
     updateSectionVisibility("project-section", gameState.sectionVisibility.projectSection);
     updateSectionVisibility("research-section", gameState.sectionVisibility.researchSection);
     updateSectionVisibility("copyDropdownItem", gameState.sectionVisibility.blueprints);
     updateSectionVisibility("pasteDropdownItem", gameState.sectionVisibility.blueprints);
     updateSectionVisibility("train-management", gameState.sectionVisibility.trainSection)
+    updateSectionVisibility("train-header", gameState.sectionVisibility.trainSection)
 
     // //Hide Project Section when all projects are done: Object.values(window.projects.projects).every(array => array.length === 0);
     // updateSectionVisibility("project-section", Object.values(window.projects.projects).length != 0);
@@ -1598,10 +1781,10 @@ function addTooltipToBuyParcelButton(buyParcelButton) {
 
   function updateBuyParcelDropdown() {
     const dropdown = document.getElementById("buyParcel-dropdown");
-  
+
     // Clear the existing options
     dropdown.innerHTML = "";
-  
+
     // Rebuild the dropdown based on gameState.maxClusters
     for (let i = 0; i < gameState.maxClusters; i++) {
       const option = document.createElement("option");
@@ -1611,12 +1794,44 @@ function addTooltipToBuyParcelButton(buyParcelButton) {
     }
   }
 
+  function addExplainerTooltip(explainedElementId, explanationHTML) {
+      // Get the element with the specified ID
+      const explainedElement = document.getElementById(explainedElementId);
+
+      // Create a div for the tooltip and set its content
+      const tooltip = document.createElement('div');
+      tooltip.innerHTML = explanationHTML;
+      tooltip.classList.add('explainerTooltip');
+
+      // Append the tooltip to the document body
+      document.body.appendChild(tooltip);
+
+      // Position the tooltip and make it visible when the explained element is hovered over
+      explainedElement.addEventListener('mouseenter', function(event) {
+          // Position the tooltip below the explained element
+          const rect = explainedElement.getBoundingClientRect();
+          tooltip.style.left = rect.left + 'px';
+          tooltip.style.top = (rect.bottom + window.scrollY) + 'px'; // Adjust for page scroll
+
+          // Make the tooltip visible
+          tooltip.classList.add('tooltip-visible');
+      });
+
+      // Hide the tooltip when the mouse leaves the explained element
+      explainedElement.addEventListener('mouseleave', function() {
+          tooltip.classList.remove('tooltip-visible');
+      });
+  }
+
+
   return {
+    updateClusterHeadersVisibility,
     addParcelToUI,
     updateResourceDisplay,
     updateBuildingDisplay,
     updateParcelBuildingCount,
     getSelectedParcelIndex,
+    setSelectedParcelIndex,
     selectParcel,
     updateParcelsSectionVisibility,
     updateEnergyDisplay,
@@ -1626,9 +1841,11 @@ function addTooltipToBuyParcelButton(buyParcelButton) {
     addParcelClickListener,
     addTooltipToBuyParcelButton,
     formatResourceCost,
+    showMissingResourceOverlay,
     activateBuilding,
     deactivateBuilding,
     updateBuyParcelDropdown,
+    addExplainerTooltip
   };
 })();
 

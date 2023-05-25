@@ -12,42 +12,35 @@ const projectsModule = (() => {
 
   const projectCategories = {
     exploration: "Exploration",
-    research: "Research",
     scouting: "Scouting",
   };
 
   const projects = {
     exploration: [
-      new Project("Exploration Contract 1/16", "exploration", { ironPlates: 50 }, { expansionPoints: 2}),
-      new Project("Exploration Contract 2/16", "exploration", { ironPlates: 75 }, { expansionPoints: 4}),
-      new Project("Exploration Contract 3/16", "exploration", { ironPlates: 125 }, { expansionPoints: 5}),
-      new Project("Exploration Contract 4/16", "exploration", { ironPlates: 200 }, { expansionPoints: 6}),
-      new Project("Exploration Contract 5/16", "exploration", { ironPlates: 300 }, { expansionPoints: 7}),
-      new Project("Exploration Contract 6/16", "exploration", { ironPlates: 450 }, { expansionPoints: 8}),
-      new Project("Exploration Contract 7/16", "exploration", { ironPlates: 675 }, { expansionPoints: 9}),
-      new Project("Exploration Contract 8/16", "exploration", { ironPlates: 1025 }, { expansionPoints: 10}),
-      new Project("Exploration Contract 9/16", "exploration", { ironPlates: 1550 }, { expansionPoints: 11}),
-      new Project("Exploration Contract 10/16", "exploration", { ironPlates: 2325 }, { expansionPoints: 12}),
-      new Project("Exploration Contract 11/16", "exploration", { ironPlates: 3500 }, { expansionPoints: 13}),
-      new Project("Exploration Contract 12/16", "exploration", { ironPlates: 5250 }, { expansionPoints: 14}),
-      new Project("Exploration Contract 13/16", "exploration", { ironPlates: 7875 }, { expansionPoints: 15}),
-      new Project("Exploration Contract 14/16", "exploration", { ironPlates: 11825 }, { expansionPoints: 16}),
-      new Project("Exploration Contract 15/16", "exploration", { ironPlates: 17750 }, { expansionPoints: 17}),
-      new Project("Exploration Contract 16/16", "exploration", { ironPlates: 26625 }, { expansionPoints: 18}),
-    ],
-    research: [
-      new Project("Research Project 1/4", "research", { ironPlates: 50 }, { researchPoints: 2 }),
-      new Project("Research Project 2/4", "research", { ironPlates: Math.round(50 * 1.5) }, { researchPoints: Math.round(2 * 1.25) }),
-      new Project("Research Project 3/4", "research", { ironPlates: Math.round(50 * 1.5 * 1.5) }, { researchPoints: Math.round(2 * 1.25 * 1.25) }),
-      new Project("Research Project 4/4", "research", { ironPlates: Math.round(50 * 1.5 * 1.5 * 1.5) }, { researchPoints: Math.round(2 * 1.25 * 1.25 * 1.25) }),
+      new Project("Exploration Contract 1/16", "exploration", { ironPlates: 50 }, { expansionPoints: 1}),
+      new Project("Exploration Contract 2/16", "exploration", { ironPlates: 75 }, { expansionPoints: 2}),
+      new Project("Exploration Contract 3/16", "exploration", { ironPlates: 125, redScience: 1 }, { expansionPoints: 10}),
+      new Project("Exploration Contract 4/16", "exploration", { ironPlates: 200, redScience: 5 }, { expansionPoints: 10}),
+      new Project("Exploration Contract 5/16", "exploration", { ironPlates: 300, redScience: 10 }, { expansionPoints: 10}),
+      new Project("Exploration Contract 6/16", "exploration", { ironPlates: 450, greenScience: 1 }, { expansionPoints: 12}),
+      new Project("Exploration Contract 7/16", "exploration", { ironPlates: 675, greenScience: 5 }, { expansionPoints: 12}),
+      new Project("Exploration Contract 8/16", "exploration", { ironPlates: 1025, darkScience: 1 }, { expansionPoints: 16}),
+      new Project("Exploration Contract 9/16", "exploration", { ironPlates: 1550, darkScience: 25 }, { expansionPoints: 16}),
+      new Project("Exploration Contract 10/16", "exploration", { ironPlates: 2325, blueScience: 1 }, { expansionPoints: 25}),
+      new Project("Exploration Contract 11/16", "exploration", { ironPlates: 3500, blueScience: 25 }, { expansionPoints: 25}),
+      new Project("Exploration Contract 12/16", "exploration", { ironPlates: 5250, purpleScience: 1 }, { expansionPoints: 40}),
+      new Project("Exploration Contract 13/16", "exploration", { ironPlates: 7875, purpleScience: 25 }, { expansionPoints: 40}),
+      new Project("Exploration Contract 14/16", "exploration", { ironPlates: 7875, yellowScience: 1 }, { expansionPoints: 50}),
+      new Project("Exploration Contract 15/16", "exploration", { ironPlates: 7875, yellowScience: 25 }, { expansionPoints: 50}),
+      new Project("Exploration Contract 16/16", "exploration", { ironPlates: 7875, whiteScience: 20 }, { expansionPoints: 100}),
     ],
     scouting: [
-      new Project("Defense Contract 1/6", "scouting", { copperPlates: 150 }, { alienArtefacts: 2 }),
-      new Project("Defense Contract 2/6", "scouting", { copperPlates: Math.round(150 * 1.5) }, { alienArtefacts: Math.round(2 * 1.25) }),
-      new Project("Defense Contract 3/6", "scouting", { copperPlates: Math.round(150 * 1.5 * 1.5) }, { alienArtefacts: Math.round(2 * 1.25 * 1.25) }),
+      new Project("Defense Contract 1/6", "scouting", { copperPlates: 50 }, { alienArtefacts: 2 }),
+      new Project("Defense Contract 2/6", "scouting", { copperPlates: Math.round(50 * 1.5) }, { alienArtefacts: Math.round(2 * 1.25) }),
+      new Project("Defense Contract 3/6", "scouting", { copperPlates: Math.round(100 * 1.5 * 1.5) }, { alienArtefacts: Math.round(2 * 1.25 * 1.25) }),
       new Project("Defense Contract 4/6", "scouting", { copperPlates: Math.round(150 * 1.5 * 1.5 * 1.5) }, { alienArtefacts: Math.round(2 * 1.25 * 1.25 * 1.25) }),
       new Project("Defense Contract 5/6", "scouting", { copperPlates: Math.round(150 * 1.5 * 1.5 * 1.5) }, { alienArtefacts: Math.round(2 * 1.25 * 1.25 * 1.25 * 1.25) }),
-      new Project("Defense Contract 6/6", "scouting", { copperPlates: Math.round(150 * 1.5 * 1.5 * 1.5 * 1.5) }, { alienArtefacts: Math.round(2 * 1.25 * 1.25 * 1.25 * 1.25 * 1.25) }),      
+      new Project("Defense Contract 6/6", "scouting", { copperPlates: Math.round(150 * 1.5 * 1.5 * 1.5 * 1.5) }, { alienArtefacts: Math.round(2 * 1.25 * 1.25 * 1.25 * 1.25 * 1.25) }),
     ],
   };
 
@@ -71,7 +64,9 @@ const projectsModule = (() => {
 
         const startProjectButton = document.createElement("button");
         startProjectButton.textContent = "Start Project";
-        startProjectButton.onclick = () => startProject(project);
+        startProjectButton.addEventListener("click", (event) => {
+          startProject(project, event);
+        });
         projectDetails.appendChild(startProjectButton);
 
         addTooltipToProjectButtons(startProjectButton, project);
@@ -125,7 +120,7 @@ const projectsModule = (() => {
     return true;
   }
 
-  function startProject(project) {
+  function startProject(project, event) {
       const selectedParcel = parcels.getParcel(ui.getSelectedParcelIndex());
 
       if (hasEnoughResources(selectedParcel, project.cost)) {
@@ -162,7 +157,17 @@ const projectsModule = (() => {
           //projectsContainer.innerHTML = ""; // Remove this line
           renderProjects();
       } else {
-          alert("You don't have enough resources to start this project.");
+        const missingResources = Object.entries(project.cost)
+          .filter(([resourceName, cost]) => {
+            const totalResource = (selectedParcel.resources[resourceName] || 0) + buildingManager.getResourcesFromRemoteConstructionFacilities(window.parcels.parcelList, resourceName);
+            return totalResource < cost;
+          })
+          .map(([resourceName, cost]) => {
+            const totalResource = (selectedParcel.resources[resourceName] || 0) + buildingManager.getResourcesFromRemoteConstructionFacilities(window.parcels.parcelList, resourceName);
+            return { resourceName, amount: cost - totalResource };
+          });
+
+        ui.showMissingResourceOverlay(missingResources, event);
       }
   }
 

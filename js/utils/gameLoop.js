@@ -57,6 +57,22 @@ const gameLoop = (() => {
         updateScheduleListUI();
         updateTrainListUI();
         ui.updateBuyParcelDropdown();
+        addParcelNavigationKeyListener();
+        ui.addExplainerTooltip('pollution-section', `
+        <div>
+            <ul>
+                <li>
+                    <strong>Pollution:</strong> Every energy consuming building generates pollution. The pollution generated is equal to the energy it consumes. Energy Producing Buildings: Coal Power Plants generate 48 pollution, while Solar plants do not generate any pollution.
+                </li>
+                <li>
+                    <strong>Biter Anger:</strong> Defeating Biters in the game will increase their anger. The more Biters you defeat, the angrier they get. Slowly cools off over time.
+                </li>
+                <li>
+                    <strong>Evolution Factor:</strong> This is a value that determines how many enemies you will face. It increases with increased pollution and Biter Anger. The higher your pollution and Biter Anger values, the more enemies you will have to face.
+                </li>
+            </ul>
+        </div>
+        `);
         // initializeAnalytics();
         gameInterval = setInterval(() => {
             updateResources();
@@ -68,11 +84,11 @@ const gameLoop = (() => {
             updateAmmunitionDisplay(battleOngoing);
             displayArmyCost(factoryUnits);
             updateStartBattleButtonState();
-            updatePollutionValues()
+            updatePollutionValues();
             updatePollutionDisplay();
             reduceBiterFactor();
             ui.updateEnergyDisplay();
-            moveTrain(1);
+            moveAllTrains();
             updateTrainListUI();
             window.progressionManager.update(gameState);
             tickCounter++;

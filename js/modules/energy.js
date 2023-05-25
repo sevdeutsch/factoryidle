@@ -31,6 +31,9 @@ window.energyManager = {
             let minProductionRatio = Infinity;
 
             for (const [key, value] of Object.entries(building.inputs)) {
+              if (parcel.resources[key] === undefined) {
+                parcel.resources[key] = 0;
+              }
               if (!parcel.resources[key] || parcel.resources[key] < value * buildingCount) {
                 const availableRatio = parcel.resources[key] / (value * buildingCount);
                 minProductionRatio = Math.min(minProductionRatio, availableRatio);

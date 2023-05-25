@@ -23,7 +23,7 @@
 
 .dark-mode button {
   border-color: rgb(131, 122, 108);
-  background-image: -webkit-linear-gradient(top, rgb(91, 99, 103), rgb(24, 26, 27));
+  background-image: -webkit-linear-gradient(top, rgb(75, 75, 75), rgb(24, 26, 27));
 
   background-color: initial;
   box-shadow: rgba(24, 26, 27, 0.4) 0px 0px 0px, rgba(24, 26, 27, 0.4) 0px 1px 0px inset;
@@ -42,11 +42,7 @@
     background: #888;
 }
 
-.dark-mode .input-btn:hover{
-  background-image: -webkit-linear-gradient(top, rgb(91, 99, 103), rgb(24, 26, 27));
-  background-color: initial;
-  cursor:pointer;
-}
+
 
 .dark-mode .parcel-tab.selected {
   background-image: -webkit-linear-gradient(top, rgb(0, 2, 4), rgb(48, 50, 53));
@@ -75,21 +71,6 @@
 
 .dark-mode td {
   background-color: #222426;
-}
-
-.dark-mode .input-btn {
-    background-color: #35393B;
-}
-
-.dark-mode .input-controller {
-    border-color: rgb(140, 130, 115);
-}
-
-.dark-mode .input-display {
-    border-left-color: rgb(140, 130, 115);
-    border-top-color: initial;
-    border-right-color: rgb(140, 130, 115);
-    border-bottom-color: initial;
 }
 
 /* Dark Mode Move Parcel Pop Up */
@@ -168,14 +149,16 @@ h1 {
 }
 
 .game-section {
-    margin-bottom: 30px;
+  padding-right: 20px;
+  padding-bottom: 40px;
 }
 
 /* Parcels styles */
 #parcels {
-    display: block;
+    display: flex;
     flex-wrap: wrap;
-    justify-content: center;
+    flex-direction: row;
+    gap: 5px;
 }
 
 .parcel {
@@ -229,7 +212,9 @@ h1 {
 
 #building-tabs {
   display: flex;
+  flex-wrap: wrap;
   justify-content: start;
+  gap: 5px;
   margin-bottom: 10px;
 }
 
@@ -294,7 +279,6 @@ cursor: pointer;
     display: block;
     flex-wrap: wrap;
     justify-content: space-evenly;
-    margin-bottom: 200px;
 }
 
 .building {
@@ -388,6 +372,21 @@ button:disabled {
 .label {
   font-weight: bold;
   margin-right: 5px;
+}
+
+.explainerTooltip {
+    position: absolute;
+    z-index: 100;
+    background-color: #222;
+    border: 1px solid #ccc;
+    padding: 10px;
+    opacity: 0;
+    transition: opacity 0.2s;
+    pointer-events: none; /* This makes sure that the tooltip does not interfere with mouse events on other elements */
+}
+
+.tooltip-visible {
+    opacity: 1;
 }
 
 /* Projects */
@@ -487,7 +486,7 @@ button:disabled {
 /* Input Controller */
 .input-controller{
   display: inline-flex;
-  width:120px;
+  width:170px;
   border:1px solid black;
 }
 
@@ -514,8 +513,61 @@ button:disabled {
   border-top: 0px;
   border-right: 1px solid black;
   border-bottom: 0px;
+  font-weight: bold;
 }
 
+.input-display.zero-value {
+  color: grey;
+  font-weight: normal;
+  background-color: #cdcdcd;
+}
+
+.dark-mode .input-display.zero-value {
+  color: grey;
+  font-weight: normal;
+  background-color: #222326;
+}
+
+.dark-mode .input-btn {
+    background-color: #35393B;
+}
+
+.dark-mode .input-btn:hover{
+  background-image: -webkit-linear-gradient(top, rgb(91, 99, 103), rgb(24, 26, 27));
+  background-color: initial;
+  cursor:pointer;
+}
+
+.dark-mode .input-controller {
+    border-color: rgb(140, 130, 115);
+}
+
+.dark-mode .input-display {
+    border-left-color: rgb(140, 130, 115);
+    border-top-color: initial;
+    border-right-color: rgb(140, 130, 115);
+    border-bottom-color: initial;
+}
+
+
+/* Default mode disabled state */
+.input-btn:disabled {
+    background-color: #DDDDDD; /* Change this to the color you want */
+    cursor: not-allowed; /* Typically, a not-allowed cursor is used to show that the button is disabled */
+}
+
+.input-btn:disabled:hover {
+    background-color: #DDDDDD; /* The hover color should typically be the same as the normal color, because you usually don't want any hover effects when the button is disabled */
+}
+
+/* Dark mode disabled state */
+.dark-mode .input-btn:disabled {
+    background-color: #2D2F31; /* Change this to the dark mode color you want */
+}
+
+.dark-mode .input-btn:disabled:hover {
+    background-color: #2D2F31; /* The hover color should typically be the same as the normal color */
+}
 /* Chrome, Safari, Edge, Opera */
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
@@ -605,6 +657,13 @@ h1 {
   position: relative;
 }
 
+/* Cell Buttons */
+.buttonWrapper {
+    float: right;
+    margin-left: 1em;
+}
+
+
 /* Move Parcel Pop Up */
 .parcel-manipulation-overlay {
     position: fixed;
@@ -625,20 +684,19 @@ h1 {
 }
 
 /* Missing Resource Overlay */
-
 #missing-resource-overlay {
-    position: fixed;
+    position: absolute;
     top: 0;
     left: 0;
-    width: 100%;
-    height: 100%;
+    padding: 12px
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    z-index: 1001;
+    z-index: 1000;
     background-color: rgba(255, 255, 255, 0.8);
     outline: 1px solid;
+    text-align: center;
 }
 
 .dark-mode #missing-resource-overlay {
@@ -646,10 +704,14 @@ h1 {
     outline: 1px solid rgb(131, 122, 108);
 }
 
-/* Cell Buttons */
-.buttonWrapper {
-    float: right;
-    margin-left: 1em;
+.notification-popup-content {
+  margin: 2em;
+}
+
+.main-flexbox {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
 }
 
 /* Cluster Styles */
@@ -660,6 +722,7 @@ h1 {
 .cluster-container {
   margin-bottom: 10px;
   margin-right: 4px;
+  display: flex !important;
 }
 
 .cluster-content {
@@ -751,7 +814,8 @@ button.cluster-header {
 }
 
 .station-overlay-content {
-  position: fixed;
+  position: relative;
+  width: fit-content;
   left: 50%;
   transform: translate(-50%, 15%);
   padding: 20px;
@@ -766,6 +830,14 @@ button.cluster-header {
   white-space: nowrap;
 }
 
+.fixed-width-cell {
+  width: 100px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+
 /* Train visualization */
 .clusterViz {
   stroke: black;
@@ -779,4 +851,64 @@ button.cluster-header {
 
 .trainViz {
   fill: red;
+}
+
+/* Toggle Sections */
+
+.hidden {
+  display: none !important;
+}
+
+#researchSelect {
+  width: 150px;
+}
+
+.resources-and-buildings-header {
+  margin-top: 0px;
+}
+
+
+table.train-table-fixed {
+  table-layout:fixed;
+  width:800px;
+}
+table.train-table-fixed td {
+  overflow:hidden;
+  white-space: nowrap;
+  text-overflow:ellipsis;
+  text-align: left;
+}
+table.train-table-fixed td:nth-of-type(1) {
+  width:100px;
+}
+table.train-table-fixed td:nth-of-type(2) {
+  width:100px;
+}
+table.train-table-fixed td:nth-of-type(3) {
+  width:100px;
+}
+table.train-table-fixed td:nth-of-type(4) {
+  width:200px;
+}
+table.train-table-fixed td:nth-of-type(5) {
+  width:300px;
+}
+
+button.collapseButton {
+  background: transparent;
+  border-left: transparent;
+  border-top: transparent;
+  border-right: transparent;
+}
+
+td.resource-name div {
+    /* Your styles here */
+    width: 250px;
+    position: absolute;
+    z-index: 3;
+    overflow: hidden;
+}
+
+.resource-name {
+  width: 187px;
 }
