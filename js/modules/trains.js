@@ -802,9 +802,11 @@ function moveTrain(trainId) {
 function moveAllTrains() {
   gameState.trainList.forEach((train) => {
     // Check if the train has a schedule assigned
-    if (train.scheduleId.length === 0) {
+    if (typeof train.scheduleId === 'undefined' || train.scheduleId === null) {
       //console.log(`Train ${train.id} does not have a schedule assigned.`);
       return; // skip this iteration
+    } else if (train.scheduleId.length === 0) {
+      return;
     }
 
     // Get the schedule
@@ -1441,6 +1443,7 @@ function showScheduleOverlay(scheduleId) {
   });
 
   // Hook up the remaining buttons and dropdowns for adding stations, saving the schedule, etc.
+  const stationsDropdown = document.getElementById("stations-dropdown");
   const addStationButton = document.getElementById("add-station");
   const addStationClickListener = onAddStationClick(scheduleId);
   if (addStationButtonListeners.has(addStationButton)) {
@@ -1448,6 +1451,12 @@ function showScheduleOverlay(scheduleId) {
   }
   addStationButton.addEventListener("click", addStationClickListener);
   addStationButtonListeners.set(addStationButton, addStationClickListener);
+
+  if (stationsDropdown.options.length === 0) {
+    addStationButton.disabled = true;
+  } else {
+    addStationButton.disabled = false;
+  };
 
   const saveScheduleButton = document.getElementById("save-schedule");
   const saveScheduleClickListener = onSaveScheduleClick(scheduleId, scheduleNameInput, schedule, overlay);

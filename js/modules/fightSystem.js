@@ -403,10 +403,17 @@ function generateBiterArmy(pollutionFactor) {
   const bigBiterAmount = biterWave.bigBiterAmount;
 
   const biterUnits = [
-    ...createUnits("Small Biter", BiterUnit, smallBiterAmount, 80, 15, 5, {alienArtefacts: 0.005}),
-    ...createUnits("Medium Biter", BiterUnit, mediumBiterAmount, 160, 35, 22, {alienArtefacts: 0.01}),
-    ...createUnits("Big Biter", BiterUnit, bigBiterAmount, 320, 100, 38, {alienArtefacts: 0.032}),
+    ...createUnits("Hatchling", BiterUnit, smallBiterAmount, 80, 15, 5, {alienArtefacts: 0.005}),
+    ...createUnits("Mantis", BiterUnit, mediumBiterAmount, 160, 35, 22, {alienArtefacts: 0.01}),
+    ...createUnits("Centipede", BiterUnit, bigBiterAmount, 320, 100, 38, {alienArtefacts: 0.032}),
   ];
+
+/*
+Hatchling
+Mantis
+Centipede
+Titan
+*/
 
   return biterUnits;
 }
@@ -992,7 +999,7 @@ function displayBattleResult(result, ammunitionUsed = {}, defeatedFactoryUnits =
   factoryUnitsTable.style.marginTop = "0px";
 
   // Create defeated biter units table
-  const biterUnitsTable = createTableFromObject("Biter Units Defeated", defeatedBiterUnits);
+  const biterUnitsTable = createTableFromObject("Swarm Units Defeated", defeatedBiterUnits);
   biterUnitsTable.style.marginTop = "0px";
 
   // Append elements to the overlay and then to the fight container

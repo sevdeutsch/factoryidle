@@ -36,11 +36,12 @@ class ProgressionManager {
     const parcels = window.gameState.parcels;
 
     const trainUpgrades = [
-      { researchKey: 'trainsMax1', maxTrains: 2, research: { redScience: 60, greenScience: 60, darkScience: 60, blueScience: 60} },
-      { researchKey: 'trainsMax2', maxTrains: 4, research: { redScience: 60, greenScience: 60, darkScience: 60, blueScience: 60, purpleScience: 60} },
-      { researchKey: 'trainsMax3', maxTrains: 8, research: { redScience: 60, greenScience: 60, darkScience: 60, blueScience: 60, purpleScience: 60, yellowScience: 60} },
-      { researchKey: 'trainsMax4', maxTrains: 16, research: { redScience: 600, greenScience: 600, darkScience: 600, blueScience: 600, purpleScience: 600, yellowScience: 600, whiteScience: 60} },
-      { researchKey: 'trainsMax5', maxTrains: 32, research: { redScience: 6000, greenScience: 6000, darkScience: 6000, blueScience: 6000, purpleScience: 6000, yellowScience: 6000, whiteScience: 600} }
+      { researchKey: 'trainsMax1', maxTrains: 2, research: { redScience: 30, greenScience: 30, darkScience: 30} },
+      { researchKey: 'trainsMax2', maxTrains: 4, research: { redScience: 60, greenScience: 60, darkScience: 60} },
+      { researchKey: 'trainsMax3', maxTrains: 8, research: { redScience: 60, greenScience: 60, darkScience: 60, blueScience: 60} },
+      { researchKey: 'trainsMax4', maxTrains: 12, research: { redScience: 60, greenScience: 60, darkScience: 60, blueScience: 60, purpleScience: 60, yellowScience: 60} },
+      { researchKey: 'trainsMax5', maxTrains: 20, research: { redScience: 600, greenScience: 600, darkScience: 600, blueScience: 600, purpleScience: 600, yellowScience: 600, whiteScience: 60} },
+      { researchKey: 'trainsMax6', maxTrains: 32, research: { redScience: 6000, greenScience: 6000, darkScience: 6000, blueScience: 6000, purpleScience: 6000, yellowScience: 6000, whiteScience: 600} }
     ];
 
     trainUpgrades.forEach((upgrade, index) => {

@@ -980,23 +980,23 @@ const buildings = [
 const cateories = [
   {
     id: "1",
-    name: "Energy"
-  },
-  {
-    id: "2",
     name: "Basics"
   },
   {
-    id: "3",
+    id: "2",
     name: "Intermediates"
   },
   {
-    id: "4",
+    id: "3",
     name: "Progress & Expansion"
   },
   {
     id: "4",
     name: "Beacons"
+  },
+  {
+    id: "5",
+    name: "Energy"
   }
 ];
 

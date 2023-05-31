@@ -25,7 +25,7 @@
     <div id="container">
       <h1>
         <span class="title-text">Incremental Factory</span>
-        <span class="version-number">v1.0.6.1</span>
+        <span class="version-number">v1.0.6.3</span>
       </h1>
       <button id="darkModeToggle">Toggle Dark Mode</button>
       <button id="feedback-button" onclick="window.open('https://docs.google.com/forms/d/1oq8YquPPuWRE1zaipHxxVlX2mTAbsTNlvpIQefqQE6M', '_blank')">
@@ -36,6 +36,9 @@
         <img src="./assets/save-icon.svg" alt="">
         <span class="save-text">Save</span>
         <span class="save-checkmark">&#10003;</span>
+      </button>
+      <button id="autoSaveToggle" onclick="toggleAutoSave()">
+        <span class="autoSave-text">Auto Save (On)</span>
       </button>
       <button id="resetButton" class="reset-button" onclick="showResetConfirmation()">
         Reset Game
@@ -111,7 +114,7 @@
                 <span class="value" id="total-pollution">0</span>
               </div>
               <div class="biter-factor">
-                <span class="label">Biter Anger:</span>
+                <span class="label">Swarm Anger:</span>
                 <span class="value" id="biter-factor">0</span>
               </div>
               <div class="pollution-factor">
@@ -183,7 +186,7 @@
 
               </div>
               <div>
-                <h3>Biter Units</h3>
+                <h3>Swarm Units</h3>
                 <table id="biter-units-table">
                   <thead>
                     <tr>
@@ -522,7 +525,7 @@
 
     </div>
 
-    <footer style="text-align: right; padding: 20px; font-size: 10px;">
+    <footer style="text-align: right; padding: 20px; font-size: 10px; margin-top: 50px;">
       Icons provided by <a href="https://icons8.com/" target="_blank" rel="noopener noreferrer" style="color: #000;">Icons8</a>
     </footer>
 

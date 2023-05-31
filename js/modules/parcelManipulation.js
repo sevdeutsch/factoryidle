@@ -377,6 +377,7 @@ function moveParcel() {
   if (!isNaN(moveAmount)) {
     const selectedParcelIndex = ui.getSelectedParcelIndex();
     const selectedParcel = window.parcels.parcelList[selectedParcelIndex];
+    const selectedParcelId = selectedParcel.id;
     const clusterId = selectedParcel.cluster || 0;
 
     // Filter the parcelList to get an array of parcels belonging to the same cluster
@@ -407,6 +408,16 @@ function moveParcel() {
       for (let i = 0; i < window.parcels.parcelList.length; i++) {
         window.parcels.parcelList[i].id = `parcel-${i + 1}`;
       }
+
+      // After updating the parcel IDs, update the schedules
+      window.gameState.scheduleList.forEach(schedule => {
+        schedule.stations.forEach(station => {
+          if (station.parcelId === selectedParcelId) {
+            // update the parcelId to the new id
+            station.parcelId = selectedParcel.id;
+          }
+        });
+      });
 
       // Update the parcel tabs in the UI
       for (let i = 0; i < window.parcels.parcelList.length; i++) {

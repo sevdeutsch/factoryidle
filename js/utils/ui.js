@@ -1483,7 +1483,7 @@ const ui = (() => {
       tableRow.appendChild(resourceNameCell);
 
       const amountCell = document.createElement("td");
-      amountCell.textContent = resource.amount;
+      amountCell.textContent = resource.amount.toFixed(1);
       tableRow.appendChild(amountCell);
 
       tableBody.appendChild(tableRow);

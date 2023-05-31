@@ -224,17 +224,37 @@ window.loadGame = function() {
 };
 
   // Autosave
-  function saveGame() {
+  function saveGameT() {
     if (gameState.autoSave) {
-      window.saveGame;
+      console.log("initiating Game Saving")
+      window.saveGame();
     }
   }
 
-  setInterval(saveGame, 120 * 1000);
+  setInterval(saveGameT, 120 * 1000);
 
   function toggleAutoSave() {
     gameState.autoSave = !gameState.autoSave;
+
+    // Update the button text to reflect the new state
+    const saveTextElement = document.querySelector('#autoSaveToggle .autoSave-text');
+    saveTextElement.textContent = `Auto Save (${gameState.autoSave ? 'On' : 'Off'})`;
   }
+
+  function initAutoSaveButton() {
+    // Find the save text element
+    const saveTextElement = document.querySelector('#autoSaveToggle .autoSave-text');
+
+    // Check if the autoSave property exists in the gameState
+    // If it does not exist, initialize it to true
+    if (typeof gameState.autoSave === 'undefined') {
+      gameState.autoSave = true;
+    }
+
+    // Set the initial text based on the current state
+    saveTextElement.textContent = `Auto Save (${gameState.autoSave ? 'On' : 'Off'})`;
+  }
+
 
 function getSaveStateString() {
   const saveData = {

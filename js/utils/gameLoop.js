@@ -58,6 +58,7 @@ const gameLoop = (() => {
         updateTrainListUI();
         ui.updateBuyParcelDropdown();
         addParcelNavigationKeyListener();
+        initAutoSaveButton();
         ui.addExplainerTooltip('pollution-section', `
         <div>
             <ul>
