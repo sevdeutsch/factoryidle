@@ -32,8 +32,6 @@ form.addEventListener('submit', function(event) {
     buildingTableDiv.removeChild(buildingTableDiv.firstChild);
   }
   var totalBuildings = createTableFromCalculation(calculateTotalBuildings(supplyChain));
-  console.log(supplyChain);
-  console.log(totalBuildings);
   buildingTableDiv.appendChild(totalBuildings);
 });
 
@@ -155,8 +153,6 @@ function createSupplyChainList(supplyChain) {
       var outputs = buildings.find(b => b.name === buildingName).outputs;
 
       var selectedSupplyChain = calculateSupplyChain(Object.keys(outputs)[0], Object.values(outputs)[0] * cycles)
-      console.log("Object.values(outputs)[0]", Object.values(outputs)[0]);
-      console.log("cycles", cycles);
       var totalBuildings = calculateTotalBuildings(selectedSupplyChain);
 
       // Sum up the total buildings
@@ -185,24 +181,17 @@ function calculateSupplyChain(resource, amount) {
   if (!building) return [];
 
   var producedAmount = fixPrecision(building.outputs[resource] * building.rate);
-  console.log(`Produced Amount: ${producedAmount}`);
-  console.log(`Amount: ${amount}`);
 
   var cyclesNeeded = fixPrecision(amount / producedAmount);
-  console.log(`Cycles Needed: ${cyclesNeeded}`);
 
   var inputs = Object.keys(building.inputs).reduce((acc, inputResource) => {
     acc[inputResource] = fixPrecision(building.inputs[inputResource] * cyclesNeeded);
     return acc;
   }, {});
 
-  console.log(`Inputs: ${JSON.stringify(inputs)}`);
-
   var supplyChain = Object.keys(inputs).map(inputResource => {
     return calculateSupplyChain(inputResource, inputs[inputResource]);
   });
-
-  console.log(`Supply Chain: ${JSON.stringify(supplyChain)}`);
 
   supplyChain.unshift({
     building: building.name,

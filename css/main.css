@@ -991,7 +991,7 @@ td.resource-name div {
   flex-wrap: wrap;
 }
 
-.challenge-slot, .challenge-card {
+.active-challenge-slot, .challenge-slot, .challenge-card {
   flex: 1 0 200px;
   height: 100px;
   display: flex;
@@ -1001,6 +1001,10 @@ td.resource-name div {
   border: 1px solid #ccc;
   cursor: pointer;
   transition: background-color 0.3s ease;
+}
+
+.active-challenge-slot {
+  cursor: default;
 }
 
 .challenge-slot:hover, .challenge-card:hover {

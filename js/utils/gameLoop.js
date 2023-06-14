@@ -56,6 +56,8 @@ const gameLoop = (() => {
         updateClusterParcels();
         updateScheduleListUI();
         updateTrainListUI();
+        updateChallengeView();
+        updateChallengeCards();
         ui.updateBuyParcelDropdown();
         addParcelNavigationKeyListener();
         initAutoSaveButton();

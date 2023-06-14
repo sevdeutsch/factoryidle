@@ -44,6 +44,8 @@ const gameState = {
   maxTrains: 1,
   maxClusters: 2,
   maxChallenges: 1,
+  activeChallenges: [],
+  currentChallengeCards: [],
   autoSave: true,
   // Add other relevant game state data as needed
 };
@@ -185,6 +187,19 @@ window.loadGame = function() {
     if (parsedState.maxClusters) {
       window.gameState.maxClusters = parsedState.maxClusters;
     }
+
+    if (parsedState.maxChallenges) {
+      window.gameState.maxChallenges = parsedState.maxChallenges;
+    }
+
+    if (parsedState.activeChallenges) {
+      window.gameState.activeChallenges = parsedState.activeChallenges;
+    }
+
+    if (parsedState.currentChallengeCards) {
+      window.gameState.currentChallengeCards = parsedState.currentChallengeCards;
+    }
+
 
     // Add parcels to the UI
     window.gameState.parcels.forEach((parcel, index) => {
