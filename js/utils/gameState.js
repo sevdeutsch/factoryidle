@@ -29,7 +29,7 @@ const gameState = {
     researchSection: false,
     blueprints: false,
     trainSection: false,
-
+    challengeSection: false,
   },
   battle: null,
   pollution: {
@@ -43,6 +43,7 @@ const gameState = {
   trainList: [],
   maxTrains: 1,
   maxClusters: 2,
+  maxChallenges: 1,
   autoSave: true,
   // Add other relevant game state data as needed
 };

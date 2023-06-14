@@ -974,3 +974,87 @@ td.resource-name div {
 #supplyChainForm {
     margin-bottom: 20px;
 }
+
+
+/* Production Challenge System Section */
+#challenge-header {
+  margin-bottom: 20px;
+}
+
+.challenge-system {
+  margin-bottom: 20px;
+}
+
+.challenge-slots, .challenge-overlay-content {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.challenge-slot, .challenge-card {
+  flex: 1 0 200px;
+  height: 100px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid #ccc;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.challenge-slot:hover, .challenge-card:hover {
+  background-color: #f0f0f0;
+}
+
+/* Challenge Overlay */
+#challenge-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.8);
+  z-index: 1000;
+}
+
+.challenge-overlay-content {
+  width: 80%;
+  margin: auto;
+  padding: 20px;
+  background-color: white;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
+.challenge-card {
+  box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.challenge-card h2 {
+  margin-top: 0;
+}
+
+.challenge-card p {
+  margin-bottom: 0;
+}
+
+.dark-mode #challenge-overlay {
+    background-color: rgba(0, 2, 4, 0.8);
+    outline: 1px solid rgb(131, 122, 108);
+}
+
+.dark-mode .challenge-overlay-content {
+  background-color: rgba(0, 2, 4, 0.8);
+}

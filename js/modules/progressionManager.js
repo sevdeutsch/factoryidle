@@ -1,4 +1,5 @@
 let clusterFlag = false;
+let challengeFlag = false;
 class ProgressionManager {
   constructor() {
     this.unlockedBuildings = new Set();
@@ -39,9 +40,10 @@ class ProgressionManager {
       { researchKey: 'trainsMax1', maxTrains: 2, research: { redScience: 30, greenScience: 30, darkScience: 30} },
       { researchKey: 'trainsMax2', maxTrains: 4, research: { redScience: 60, greenScience: 60, darkScience: 60} },
       { researchKey: 'trainsMax3', maxTrains: 8, research: { redScience: 60, greenScience: 60, darkScience: 60, blueScience: 60} },
-      { researchKey: 'trainsMax4', maxTrains: 12, research: { redScience: 60, greenScience: 60, darkScience: 60, blueScience: 60, purpleScience: 60, yellowScience: 60} },
-      { researchKey: 'trainsMax5', maxTrains: 20, research: { redScience: 600, greenScience: 600, darkScience: 600, blueScience: 600, purpleScience: 600, yellowScience: 600, whiteScience: 60} },
-      { researchKey: 'trainsMax6', maxTrains: 32, research: { redScience: 6000, greenScience: 6000, darkScience: 6000, blueScience: 6000, purpleScience: 6000, yellowScience: 6000, whiteScience: 600} }
+      { researchKey: 'trainsMax4', maxTrains: 12, research: { redScience: 60, greenScience: 60, darkScience: 60, blueScience: 60, purpleScience: 60} },
+      { researchKey: 'trainsMax5', maxTrains: 16, research: { redScience: 60, greenScience: 60, darkScience: 60, blueScience: 60, purpleScience: 60, yellowScience: 60} },
+      { researchKey: 'trainsMax6', maxTrains: 20, research: { redScience: 600, greenScience: 600, darkScience: 600, blueScience: 600, purpleScience: 600, yellowScience: 600, whiteScience: 60} },
+      { researchKey: 'trainsMax7', maxTrains: 24, research: { redScience: 6000, greenScience: 6000, darkScience: 6000, blueScience: 6000, purpleScience: 6000, yellowScience: 6000, whiteScience: 600} }
     ];
 
     trainUpgrades.forEach((upgrade, index) => {
@@ -55,6 +57,37 @@ class ProgressionManager {
             new Research(nextUpgrade.researchKey, `Upgrade Train Limit to ${nextUpgrade.maxTrains}`, nextUpgrade.research)
           );
           window.researchManager.populateResearchDropdown();
+        }
+      }
+    });
+
+    const challengeUpgrades = [
+      { researchKey: 'challengeMax1', maxChallenges: 2, research: { redScience: 60, greenScience: 60, darkScience: 60} },
+      { researchKey: 'challengeMax2', maxChallenges: 3, research: { redScience: 60, greenScience: 60, darkScience: 60, blueScience: 60} },
+      { researchKey: 'challengeMax3', maxChallenges: 4, research: { redScience: 60, greenScience: 60, darkScience: 60, blueScience: 60, purpleScience: 60} },
+      { researchKey: 'challengeMax4', maxChallenges: 5, research: { redScience: 60, greenScience: 60, darkScience: 60, blueScience: 60, purpleScience: 60, yellowScience: 60} },
+      { researchKey: 'challengeMax5', maxChallenges: 6, research: { redScience: 600, greenScience: 600, darkScience: 600, blueScience: 600, purpleScience: 600, yellowScience: 600, whiteScience: 60} },
+      { researchKey: 'challengeMax6', maxChallenges: 7, research: { redScience: 6000, greenScience: 6000, darkScience: 6000, blueScience: 6000, purpleScience: 6000, yellowScience: 6000, whiteScience: 600} }
+    ];
+
+    challengeUpgrades.forEach((upgrade, index) => {
+      if (window.gameState.research[upgrade.researchKey]) {
+        gameState.maxChallenges = upgrade.maxChallenges;
+
+
+        // Add the next research option if it exists in the array and it's not already added
+        const nextUpgrade = challengeUpgrades[index + 1];
+        if (nextUpgrade && !window.researchManager.researchExists(nextUpgrade.researchKey)) {
+          window.researchManager.addResearch(
+            new Research(nextUpgrade.researchKey, `Upgrade Challenge Slot Limit to ${nextUpgrade.maxChallenges}`, nextUpgrade.research)
+          );
+          window.researchManager.populateResearchDropdown();
+          updateChallengeView();
+        } else if (index === challengeUpgrades.length - 1 && !challengeFlag) {
+          // Handle edge case when the last upgrade is researched
+          console.log("challengeUpgrades");
+          updateChallengeView();
+          challengeFlag = true;
         }
       }
     });
@@ -73,7 +106,6 @@ class ProgressionManager {
 
         // Add the next research option if it exists in the array and it's not already added
         const nextUpgrade = clusterUpgrades[index + 1];
-        const thisUpgrade = clusterUpgrades[index];
         if (nextUpgrade && !window.researchManager.researchExists(nextUpgrade.researchKey)) {
           window.researchManager.addResearch(
             new Research(nextUpgrade.researchKey, `Upgrade Cluster Limit to ${nextUpgrade.maxClusters}`, nextUpgrade.research)
@@ -110,6 +142,10 @@ class ProgressionManager {
     if (window.gameState.research.gameWon3) {
       alert("This you must explain to me.");
       window.gameState.research.gameWon3 = false;
+    }
+
+    if (window.gameState.research.challengeTech) {
+      gameState.sectionVisibility.challengeSection = true;
     }
 
     if (window.gameState.research.trains) {

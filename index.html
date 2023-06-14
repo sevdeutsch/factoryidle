@@ -172,6 +172,39 @@
 
         </div>
 
+        <!-- Production Challenge System Section -->
+        <h2 id="challenge-header">Production Challenge System <button class="collapseButton" onclick="toggleGameSection('challenge-system')">-</button> </h2>
+        <div id="challenge-system" class="challenge-system" style="display: none;">
+            <h3>Challenges</h3>
+            <div class="challenge-slots">
+                <!-- Challenge Slots will be dynamically added here -->
+                <div class="challenge-slot" onclick="showChallengeOverlay()"><p>Pick Challenge</p></div>
+            </div>
+        </div>
+
+        <!-- Challenge Selection Overlay -->
+        <div id="challenge-overlay" class="challenge-overlay" style="display: none; position: fixed; overflow: auto; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.8); z-index: 1000;">
+            <div class="challenge-overlay-content">
+                <div class="challenge-card">
+                    <h2>Iron Ore</h2>
+                    <p>Level 1: 5 items/s</p>
+                    <p>Difficulty: Medium</p>
+                </div>
+                <div class="challenge-card">
+                    <h2>Coal</h2>
+                    <p>Level 1: 3 items/s</p>
+                    <p>Difficulty: Easy</p>
+                </div>
+                <div class="challenge-card">
+                    <h2>Gold</h2>
+                    <p>Level 1: 1 item/s</p>
+                    <p>Difficulty: Hard</p>
+                </div>
+                <button onclick="hideChallengeOverlay()">Close</button>
+            </div>
+        </div>
+
+
         <!-- Military -->
         <h2 id="military-header">Military Operations <button class="collapseButton" onclick="toggleGameSection('fight-container')">-</button> </h2>
           <div class="game-section" id="fight-container" style="display: none;">
@@ -571,6 +604,7 @@
     <script src="js/modules/waves.js"></script>
     <script src="js/modules/fightSystem.js"></script>
     <script src="js/modules/trains.js"></script>
+    <script src="js/modules/challenges.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/lz-string@1.4.4/libs/lz-string.min.js"></script>
     <script src="js/utils/gameState.js"></script>
     <script src="js/modules/pollutionSystem.js"></script>

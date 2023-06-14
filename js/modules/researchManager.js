@@ -100,8 +100,10 @@ window.researchManager.addResearch(new Research('advancedElectronics', 'Advanced
 window.researchManager.addResearch(new Research('advancedMaterialProcessing', 'Advanced Material Processing', { redScience: 50, greenScience: 50, darkScience: 50 }));
 window.researchManager.addResearch(new Research('basicEngineUnits', 'Basic Engine Tech', { redScience: 30, greenScience: 30, darkScience: 30 }));
 window.researchManager.addResearch(new Research('trainsMax1', 'Upgrade Train Limit to 2', { redScience: 60, greenScience: 60, darkScience: 60}));
+window.researchManager.addResearch(new Research('challengeTech', 'Production Challenges', { redScience: 60, greenScience: 60, darkScience: 60}));
 window.researchManager.addResearch(new Research('beaconTech', 'Beacon Tech', { redScience: 100, greenScience: 100, darkScience: 100, blueScience: 100}));
 window.researchManager.addResearch(new Research('clustersMax1', 'Upgrade Cluster Limit to 3', { redScience: 60, greenScience: 60, darkScience: 60, blueScience: 60}));
+window.researchManager.addResearch(new Research('challengeMax1', 'Upgrade Challenge Limit to 2', { redScience: 100, greenScience: 100, darkScience: 100, blueScience: 100}));
 window.researchManager.addResearch(new Research('militaryTech2', 'Armor Penetrating Ammunition', { redScience: 150, greenScience: 150, darkScience: 150, blueScience: 150}));
 window.researchManager.addResearch(new Research('advancedElectronics2', 'Advanced Electronics II', { redScience: 150, greenScience: 150, darkScience: 150, blueScience: 150, purpleScience: 150}));
 window.researchManager.addResearch(new Research('advancedEngineUnits', 'Advanced Engine Units', { redScience: 150, greenScience: 150, darkScience: 150, blueScience: 150, purpleScience: 150}));
