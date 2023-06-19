@@ -10,7 +10,17 @@ function hideChallengeOverlay() {
     document.getElementById("challenge-overlay").style.display = "none";
 }
 
-function initActiveChallenge(resource) {
+function getNextMilestone(challenge) {
+  // Get the milestones which are greater than the progress
+  const remainingMilestones = challenge.milestones.filter(milestone => milestone > challenge.progress);
+
+  // Get the closest milestone
+  const nextMilestone = Math.min(...remainingMilestones);
+
+  return nextMilestone;
+}
+
+function initActiveChallenge(challenge) {
     // Get the challenge slots
     const challengeSlots = document.querySelectorAll('.challenge-slot');
 
@@ -19,14 +29,23 @@ function initActiveChallenge(resource) {
         // Get the first available slot
         const firstSlot = challengeSlots[0];
 
+        // Get the next milestone
+        const nextMilestone = getNextMilestone(challenge);
+
         // Replace the slot with an active challenge slot
-        firstSlot.outerHTML = buildChallengeSlot(resource);
+        const challengeHTML = `
+            <div class="active-challenge-slot">
+                <h2 class="active-challenge-slot-content">${challenge.resourceId}</h2>
+                <p class="active-challenge-slot-content">Next Milestone: ${nextMilestone}</p>
+                <p class="active-challenge-slot-content">Progress: ${challenge.progress}</p>
+                <p class="active-challenge-slot-content">Reward Base: ${challenge.rewardBase}</p>
+                <p class="active-challenge-slot-content">Earned Rewards: ${challenge.earnedRewards}</p>
+            </div>
+        `;
+        firstSlot.outerHTML = challengeHTML;
 
         // Remove the onclick event
         firstSlot.onclick = null;
-
-        // Change the class name
-        firstSlot.className = 'active-challenge-slot';
     }
 }
 
@@ -56,6 +75,20 @@ function updateChallengeView() {
 
     // Initialize active challenges
     gameState.activeChallenges.forEach(initActiveChallenge);
+
+    // Display "Total Earned Rewards"
+    const totalEarnedRewards = document.createElement('p');
+    totalEarnedRewards.innerText = `Total Earned Rewards: ${getTotalEarnedRewards()}`;
+    challengeSlotsContainer.appendChild(totalEarnedRewards);
+}
+
+function getTotalEarnedRewards() {
+  let total = 0;
+  for (const challengeId in gameState.activeChallenges) {
+    const challenge = gameState.activeChallenges[challengeId];
+    total += challenge.earnedRewards || 0;
+  }
+  return total;
 }
 
 function updateChallengeCards() {
@@ -70,18 +103,17 @@ function updateChallengeCards() {
   if (gameState.currentChallengeCards && gameState.currentChallengeCards.length > 0) {
     selectedResources = gameState.currentChallengeCards;
   } else {
-    // Get all unique resources
+    // Get all unique resources except the active challenges
     const resources = [];
     parcels.parcelList.forEach(parcel => {
       Object.keys(parcel.resources).forEach(resource => {
-        if (!resources.includes(resource)) {
+        if (!resources.includes(resource) && !gameState.activeChallenges.some(challenge => challenge.resourceId === resource)) {
           if (buildingManager.getBuildingByResourceName(resource)) {
             resources.push(resource);
           }
         }
       });
     });
-
     // Randomly select 3 resources
     selectedResources = [];
     while (selectedResources.length < 3) {
@@ -116,7 +148,7 @@ function updateChallengeCards() {
     const resourceTitle = document.createElement('h2');
     resourceTitle.innerText = resource;
     const milestoneText = document.createElement('p');
-    milestoneText.innerText = `Level 1: ${milestone} items/s`;
+    milestoneText.innerText = `Level 1: ${milestone} items`;
     const rewardText = document.createElement('p');
     rewardText.innerText = `Reward: ${rewardBase}`;
 
@@ -153,15 +185,34 @@ function pickChallenge() {
         return;
     }
 
-    // Add the selected challenge to active challenges
+    // Get the selected challenge resource name
     const chosenResourceChallenge = selectedChallenge.querySelector('h2').innerText;
-    gameState.activeChallenges.push(chosenResourceChallenge);
+
+    // Get the corresponding resource factor
+    const resourceFactor = allResourceFactors[chosenResourceChallenge];
+
+    if (!resourceFactor) {
+        alert(`No resource factor found for ${chosenResourceChallenge}`);
+        return;
+    }
+
+    // Create the challenge object
+    const challenge = {
+        resourceId: chosenResourceChallenge,
+        rewardBase: resourceFactor.rewardBase,
+        milestones: resourceFactor.milestones,
+        progress: 0,
+        earnedRewards: 0,
+    };
+
+    // Add the challenge object to active challenges
+    gameState.activeChallenges.push(challenge);
 
     // Reset current challenge cards
     gameState.currentChallengeCards = [];
 
     // Initialize the new active challenge
-    initActiveChallenge(chosenResourceChallenge);
+    initActiveChallenge(challenge);
 
     // Hide the challenge overlay
     hideChallengeOverlay();
@@ -169,8 +220,6 @@ function pickChallenge() {
     // Generate new Challenge cards
     updateChallengeCards();
 }
-
-
 
 /* --------------------------------------------------------------------------------------------------------------------------------------------------------- */
 /* --------------------------------------------------------------- Calculate Challenge Cards --------------------------------------------------------------- */
@@ -247,7 +296,6 @@ function calculateFactorsForAllResources(allResourceStats) {
 }
 
 let allResourceFactors = calculateFactorsForAllResources(allResourceStats);
-console.log(allResourceFactors);
 
 /* --------------------------------------------------------------------------------------------------------------------------------------------------------- */
 /* --------------------------------------------------------------- Helper Functions for GameDesign Analytics------------------------------------------------ */

@@ -93,6 +93,7 @@ const gameLoop = (() => {
             ui.updateEnergyDisplay();
             moveAllTrains();
             updateTrainListUI();
+            updateChallengeView();
             window.progressionManager.update(gameState);
             tickCounter++;
 
@@ -238,6 +239,51 @@ const gameLoop = (() => {
                 // Insert the new production rate into the circular buffer
                 parcel.productionHistory[key].insert(value * buildingCount * building.rate * (totalProductionRateModifier));
               }
+            }
+
+            if (buildingId === "productionChallengePlant") {
+              // Insert Production Challenge Logic Here:
+              const activeChallenges = gameState.activeChallenges;
+              for (const challengeId in activeChallenges) {
+                const challenge = activeChallenges[challengeId];
+                const resourceId = challenge.resourceId;
+
+                const amount = parcel.resources[resourceId];
+                if (!amount) {
+                  continue
+                }
+
+                // Remove the resources from the parcel's resources object
+                if (parcel.resources[resourceId] && amount) {
+                  parcel.resources[resourceId] -= amount;
+                }
+
+                // Add the amount of removed resources to the progress value in the activeChallenges
+                if (challenge.progress) {
+                  challenge.progress += amount;
+                } else {
+                  challenge.progress = amount;
+                }
+
+                // Get the next milestone
+                const nextMilestone = getNextMilestone(challenge);
+
+                // Calculate earnedRewards
+                const currentMilestoneIndex = challenge.milestones.findIndex((milestone) => milestone >= challenge.progress);
+
+                if (currentMilestoneIndex > 0) {
+                  const rewardBase = challenge.rewardBase;
+                  const rewardsMultiplier = currentMilestoneIndex;
+
+                  challenge.earnedRewards = rewardBase * rewardsMultiplier;
+                } else {
+                  challenge.earnedRewards = 0;
+                }
+              }
+
+              // if (activeChallenges.length > 0) {
+              //   updateChallengeView()
+              // }
             }
           }
         }

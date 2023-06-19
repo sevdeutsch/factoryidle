@@ -1005,6 +1005,11 @@ td.resource-name div {
 
 .active-challenge-slot {
   cursor: default;
+  height: auto;
+}
+
+.active-challenge-slot-content {
+  margin: 0;
 }
 
 .challenge-slot:hover, .challenge-card:hover {

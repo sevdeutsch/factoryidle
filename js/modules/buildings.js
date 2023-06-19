@@ -985,6 +985,22 @@ const buildings = [
     consumptionModifierSources: {},
     unlockConditions: () => window.gameState.research.rocketTech,
   },
+  {
+    id: "productionChallengePlant",
+    name: "Production Challenge Plant",
+    category : "Progress & Expansion",
+    cost: { steel: 1000, bricks: 250 },
+    inputs: {},
+    outputs: {},
+    energyInput: 12,
+    rate: 1,
+    minable: false,
+    productionRateModifier: 0,
+    consumptionRateModifier: 0,
+    productionModifierSources: {},
+    consumptionModifierSources: {},
+    unlockConditions: () => window.gameState.research.challengeTech,
+  },
 ];
 
 const cateories = [
