@@ -54,6 +54,7 @@ window.gameState = gameState;
 
 window.saveGame = function() {
   console.log('Saving game...');
+
   // Save the battle object
   if (window.battle) {
     window.gameState.battle = window.battle.exportData();
@@ -61,12 +62,27 @@ window.saveGame = function() {
 
   // Convert unlockedBuildings Set to an Array before saving
   const unlockedBuildingsArray = Array.from(window.progressionManager.unlockedBuildings);
-  const gameStateCopy = { ...window.gameState, progression: { ...window.gameState.progression, unlockedBuildings: unlockedBuildingsArray } };
+
+  // Deep copy of gameState while excluding the specified attributes
+  const gameStateCopy = JSON.parse(JSON.stringify(window.gameState));
+  gameStateCopy.parcels = gameStateCopy.parcels.map(parcel => {
+    delete parcel.previousResourceHistory;
+    delete parcel.previousResources;
+    delete parcel.previousResourceChangeSum;
+    delete parcel.productionHistory;
+    delete parcel.utilization;
+    return parcel;
+  });
+
+  gameStateCopy.progression = { ...window.gameState.progression, unlockedBuildings: unlockedBuildingsArray };
 
   localStorage.setItem('gameState', LZString.compress(JSON.stringify(gameStateCopy)));
+
   const projectsJSON = LZString.compress(JSON.stringify(projectsModule.projects));
   localStorage.setItem("savedProjects", projectsJSON);
+
   localStorage.setItem("researchData", LZString.compress(window.researchManager.saveResearchData()));
+
   console.log('Game Saved.');
 };
 
@@ -220,14 +236,30 @@ window.loadGame = function() {
     }
 
     // Load the battle data if it exists
+    const expandUnits = units => units.flatMap(unit => {
+      // If the unit was saved in the old format (without count), just return it as is
+      if (!unit.count) {
+        return unit;
+      }
+
+      // Create a new object excluding the count property
+      const unitWithoutCount = { ...unit };
+      delete unitWithoutCount.count;
+
+      // Return an array of identical units
+      return Array.from({ length: unit.count }, () => unitWithoutCount);
+    });
+
     if (parsedState.battle) {
       const battleData = parsedState.battle;
+
       battle = new Battle(
-        battleData.factoryUnits,
-        battleData.biterUnits,
+        expandUnits(battleData.factoryUnits),
+        expandUnits(battleData.biterUnits),
         startingAmmunition,
         updateUI
       );
+
       factoryUnits = battle.factoryUnits;
       biterUnits = battle.biterUnits;
       window.battle = battle;
@@ -272,29 +304,47 @@ window.loadGame = function() {
   }
 
 
-function getSaveStateString() {
-  const saveData = {
-    gameState: JSON.parse(LZString.decompress(localStorage.getItem('gameState'))),
-    savedProjects: JSON.parse(LZString.decompress(localStorage.getItem('savedProjects'))),
-    researchData: LZString.decompress(localStorage.getItem('researchData')),
-  };
-  return JSON.stringify(saveData);
-}
-
-function loadSaveStateFromString(saveStateString) {
-  try {
-    const saveData = JSON.parse(saveStateString);
-    localStorage.setItem('gameState', LZString.compress(JSON.stringify(saveData.gameState)));
-    localStorage.setItem('savedProjects', LZString.compress(JSON.stringify(saveData.savedProjects)));
-    localStorage.setItem('researchData', LZString.compress(saveData.researchData));
-
-    // Reload the page to apply the changes
-    location.reload();
-  } catch (error) {
-    console.error("Invalid save state string:", error);
-    alert("Invalid save state string. Please check the input and try again.");
+  // Helper function to check if a string is Base64
+  function isBase64(str) {
+    const regex = /^(?:[A-Za-z\d+\/]{4})*?(?:[A-Za-z\d+\/]{2}(?:==)?|[A-Za-z\d+\/]{3}=?)?$/;
+    return regex.test(str);
   }
-}
+
+  function getSaveStateString() {
+    const saveData = {
+      gameState: JSON.parse(LZString.decompress(localStorage.getItem('gameState'))),
+      savedProjects: JSON.parse(LZString.decompress(localStorage.getItem('savedProjects'))),
+      researchData: LZString.decompress(localStorage.getItem('researchData')),
+    };
+
+    // Convert JSON to Base64 using encodeURIComponent to handle non-Latin1 characters
+    const json = JSON.stringify(saveData);
+    return btoa(encodeURIComponent(json).replace(/%([0-9A-F]{2})/g, (match, p1) => String.fromCharCode('0x' + p1)));
+  }
+
+  function loadSaveStateFromString(saveStateString) {
+    try {
+      // Decode from Base64 if the string is valid Base64, otherwise assume it's a legacy string
+      let decodedString;
+      if (isBase64(saveStateString)) {
+        decodedString = decodeURIComponent(atob(saveStateString).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
+      } else {
+        decodedString = saveStateString;
+      }
+
+      const saveData = JSON.parse(decodedString);
+
+      localStorage.setItem('gameState', LZString.compress(JSON.stringify(saveData.gameState)));
+      localStorage.setItem('savedProjects', LZString.compress(JSON.stringify(saveData.savedProjects)));
+      localStorage.setItem('researchData', LZString.compress(saveData.researchData));
+
+      // Reload the page to apply the changes
+      location.reload();
+    } catch (error) {
+      console.error("Invalid save state string:", error);
+      alert("Invalid save state string. Please check the input and try again.");
+    }
+  }
 
 // function loadSaveStateFromStringLegacy(saveStateString) {
 //   try {

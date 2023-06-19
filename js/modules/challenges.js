@@ -318,7 +318,7 @@ function sortStatsByTotalCycles(stats) {
 }
 
 let sortedResourceStats = sortStatsByTotalCycles(allResourceStats);
-console.log(sortedResourceStats);
+//console.log(sortedResourceStats);
 
 function sortStatsByUniqueBuildings(stats) {
   // Convert the stats object into an array
@@ -337,4 +337,4 @@ function sortStatsByUniqueBuildings(stats) {
 }
 
 let sortedByUniqueBuildings = sortStatsByUniqueBuildings(allResourceStats);
-console.log(sortedByUniqueBuildings);
+//console.log(sortedByUniqueBuildings);

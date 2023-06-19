@@ -176,7 +176,6 @@ function createSupplyChainList(supplyChain) {
 
 function calculateSupplyChain(resource, amount) {
   var building = buildings.find(b => b.outputs[resource]);
-  console.log(`Building: ${building ? building.name : 'None'}`);
 
   if (!building) return [];
 

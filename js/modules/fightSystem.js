@@ -329,10 +329,29 @@ class Battle {
     }
   }
 
+  groupAndCountUnits(units) {
+    const unitMap = new Map();
+
+    units.forEach(unit => {
+      // Serialize unit as a string so it can be used as a Map key
+      const key = JSON.stringify(unit);
+      if (unitMap.has(key)) {
+        // If unit is already in the map, increase the count
+        unitMap.get(key).count += 1;
+      } else {
+        // If unit is not in the map, add it with count 1
+        unitMap.set(key, { ...unit, count: 1 });
+      }
+    });
+
+    // Convert the map values to an array
+    return Array.from(unitMap.values());
+  }
+
   exportData() {
     return {
-      factoryUnits: this.factoryUnits,
-      biterUnits: this.biterUnits,
+      factoryUnits: this.groupAndCountUnits(this.factoryUnits),
+      biterUnits: this.groupAndCountUnits(this.biterUnits),
       ammunition: this.ammunition,
     };
   }

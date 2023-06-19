@@ -332,7 +332,6 @@ const gameLoop = (() => {
 
         clusterParcels[currentCluster].push(currentParcel);
       }
-      console.log(clusterParcels);
     }
 
     function updateBeltLogistics() {

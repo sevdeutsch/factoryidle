@@ -641,8 +641,6 @@ const ui = (() => {
                 ${rateColor} ${progressPercentage}%,
                 ${rateColor} 100%)`;
 
-            //console.log(rateColor);
-
           } else if (column.id === 'productionRate') {
             //update
             let targetInterval = 7;
@@ -1128,7 +1126,6 @@ const ui = (() => {
       allTab.id ="tab-all";
       allTab.addEventListener("click", () => {
         selectedTab = "All";
-        console.log("2", selectedTab);
         updateBuildingDisplay(parcels.getParcel(selectedParcelIndex));
         updateTabClasses();
       });
@@ -1143,12 +1140,10 @@ const ui = (() => {
         if(!buildingTab){
           buildingTab = document.createElement("button");
           buildingTab.className = (selectedTab === key ? "building-tab selected" : "building-tab");
-          console.log(buildingTab.className);
           buildingTab.textContent = key;
           buildingTab.id = `tab-${key}`;
           buildingTab.addEventListener("click", () => {
             selectedTab = key;
-            console.log("1", selectedTab);
             updateBuildingDisplay(parcels.getParcel(selectedParcelIndex));
             updateTabClasses();
           });
