@@ -182,7 +182,6 @@ document.addEventListener("DOMContentLoaded", () => {
       updateOverlayBehavior();
     });
 
-    gameLoop.start();
     researchManager.populateResearchDropdown();
     ui.updateParcelsSectionVisibility();
     //ui.populateBuildNewBuildingDropdown();
@@ -209,7 +208,7 @@ document.addEventListener("DOMContentLoaded", () => {
       overlay.style.display = 'none';
     }
 
-
+    gameLoop.start();
 });
 
 function saveGameWithAnimation() {
