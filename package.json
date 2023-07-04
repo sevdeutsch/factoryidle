@@ -1,0 +1,72 @@
+{
+  "name": "incremental-factory",
+  "version": "1.0.6",
+  "description": "Idle game",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder",
+    "build:win": "electron-builder build --windows nsis"
+  },
+  "build": {
+    "appId": "com.incrementalfactory.game",
+    "productName": "Incremental Factory 1.0.6",
+    "directories": {
+      "output": "build"
+    },
+    "files": [
+      "index.html",
+      "main.js",
+      "package.json",
+      "dist/",
+      "assets/",
+      "icons/",
+      "css/",
+      "js/"
+    ],
+    "mac": {
+      "icon": "icons/icon.icns",
+      "category": "public.app-category.games",
+      "target": [
+        {
+          "target": "dmg",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        }
+      ]
+    },
+    "win": {
+      "icon": "icons/icon.ico",
+      "target": [
+        "nsis"
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    },
+    "linux": {
+      "icon": "icons/icon.png",
+      "target": [
+        "AppImage",
+        "deb"
+      ]
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sevdeutsch/factoryidle.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/sevdeutsch/factoryidle/issues"
+  },
+  "homepage": "https://github.com/sevdeutsch/factoryidle#readme",
+  "devDependencies": {
+    "electron": "^24.4.0",
+    "electron-builder": "^23.6.0"
+  }
+}

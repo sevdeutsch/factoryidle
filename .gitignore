@@ -3,5 +3,11 @@
 
 #Ignore Other
 Other/
+<<<<<<< HEAD
+
+build/*
+node_modules/*
+=======
 node_modules/
 build/
+>>>>>>> production
